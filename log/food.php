@@ -2,7 +2,6 @@
 session_start();
 include "../db.php";
 
-// Check if food table exists, create if not
 function ensureFoodTableExists($conn) {
     $sql = "CREATE TABLE IF NOT EXISTS foods (
         id VARCHAR(32) PRIMARY KEY,
@@ -101,18 +100,7 @@ if ($result) {
 </head>
 <body class="bg-slate-50 min-h-screen">
     <div class="bg-gradient-to-r from-primary to-indigo-800 text-white">
-        <nav class="container mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <div class="text-2xl font-bold">NutriTrack<span class="text-secondary">2025</span></div>
-                <div class="space-x-4 hidden md:flex items-center">
-                    <a href="../dashboard/user.php" class="hover:text-secondary transition">Dashboard</a>
-                    <a href="#" class="hover:text-secondary transition">Analytics</a>
-                    <a href="#" class="hover:text-secondary transition">Profile</a>
-                    <button class="bg-white text-primary px-4 py-2 rounded-lg shadow hover:bg-opacity-90 transition">Sign Out</button>
-                </div>
-                <button class="md:hidden text-2xl"><i class="fas fa-bars"></i></button>
-            </div>
-        </nav>
+        <?php include '../nav_dashboard.php'; ?>
         
         <div class="container mx-auto px-6 py-16">
             <h1 class="text-4xl md:text-5xl font-bold mb-6">Food Tracker</h1>
