@@ -2,7 +2,7 @@
     <div class="flex justify-between items-center">
         <div class="text-2xl font-bold">NutriTrack<span class="text-secondary">2025</span></div>
         <div class="space-x-4 hidden md:flex items-center">
-            <a href="../index.php" class="hover:text-secondary transition">Home</a>
+            <a href="../index.php" class="hover:text-secondary transition color-white">Home</a>
             <?php if (isset($_SESSION['firstname'])): ?>
                 <a href="../dashboard/user.php" class="hover:text-secondary transition">Dashboard</a>
                 <a href="../settings/user.php" class="hover:text-secondary transition">Profile</a>
