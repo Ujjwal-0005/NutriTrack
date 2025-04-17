@@ -106,7 +106,7 @@ session_start();
             </div>
         </div>
         
-        <!-- Products Section -->
+<!--         <!-- Products Section -->
         <div class="py-20 px-6 border-b border-gray-200" id="products">
             <div class="container mx-auto max-w-7xl">
                 <div class="mb-16 text-center">
@@ -141,7 +141,7 @@ session_start();
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         
         <!-- BMI Calculator Section -->
         <div class="py-20 px-6 bg-white" id="bmi">
