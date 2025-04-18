@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssiddddsi", $id, $date, $meal_type, $food_name, $calories, $protein, $carbs, $fat, $notes, $timestamp);
+    $stmt->bind_param("ssssiddssi", $id, $date, $meal_type, $food_name, $calories, $protein, $carbs, $fat, $notes, $timestamp);
     
     if (!$stmt->execute()) {
         die("Error saving food: " . $stmt->error);

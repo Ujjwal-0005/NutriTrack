@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $type = $_POST['type'];
     $duration = $_POST['duration'];
     $calories = $_POST['calories'] ?? 0;
-    $intensity = $_POST['intensity'];
+    $intensity = 0;
     $notes = $_POST['notes'] ?? '';
     $timestamp = time();
 
@@ -147,7 +147,7 @@ if ($result) {
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
                         </div>
                         
-                        <div>
+                        <!-- <div>
                             <label for="intensity" class="block text-sm font-medium text-gray-700 mb-1">Intensity</label>
                             <select id="intensity" name="intensity" required
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
@@ -156,7 +156,7 @@ if ($result) {
                                 <option value="High">High</option>
                                 <option value="Very High">Very High</option>
                             </select>
-                        </div>
+                        </div> -->
                         
                         <div>
                             <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
@@ -190,7 +190,7 @@ if ($result) {
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Date</th>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Type</th>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Duration</th>
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Intensity</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Calories</th>
                                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Actions</th>
                                 </tr>
                             </thead>
@@ -218,21 +218,7 @@ if ($result) {
                                                 </span>
                                             </td>
                                             <td class="px-4 py-4 text-gray-700"><?= htmlspecialchars($workout['duration']) ?> min</td>
-                                            <td class="px-4 py-4">
-                                                <span class="px-3 py-1 rounded-full text-xs font-medium 
-                                                    <?php
-                                                    switch($workout['intensity']) {
-                                                        case 'Low': echo 'bg-green-100 text-green-800'; break;
-                                                        case 'Medium': echo 'bg-yellow-100 text-yellow-800'; break;
-                                                        case 'High': echo 'bg-orange-100 text-orange-800'; break;
-                                                        case 'Very High': echo 'bg-red-100 text-red-800'; break;
-                                                        default: echo 'bg-gray-100 text-gray-800';
-                                                    }
-                                                    ?>
-                                                ">
-                                                    <?= htmlspecialchars($workout['intensity']) ?>
-                                                </span>
-                                            </td>
+                                            <td class="px-4 py-4 text-gray-700"><?= htmlspecialchars($workout['calories']) ?> cal</td>
                                             <td class="px-4 py-4">
                                                 <div class="flex space-x-2">
                                                     <button class="text-gray-500 hover:text-primary" title="View details">

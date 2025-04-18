@@ -146,7 +146,7 @@ $conn->close();
                         </div>
                     <?php endif; ?>
                     
-                    <form method="POST" class="space-y-6">
+                    <form method="POST" class="space-y-6" onsubmit="return validateForm()">
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                             <div class="relative">
@@ -171,27 +171,33 @@ $conn->close();
                             </div>
                         </div>
                         
-                        <!-- <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <input id="remember-me" name="remember-me" type="checkbox" 
-                                    class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
-                                <label for="remember-me" class="ml-2 block text-sm text-gray-700">
-                                    Remember me
-                                </label>
-                            </div>
-                            
-                            <a href="#" class="text-sm font-medium text-primary hover:text-indigo-700">
-                                Forgot your password?
-                            </a>
-                        </div> -->
-                        
                         <button type="submit" 
                             class="w-full flex justify-center items-center px-6 py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-all duration-300">
                             <span>Sign In</span>
                             <i class="ri-arrow-right-line ml-2"></i>
                         </button>
                     </form>
-                    
+
+                    <script>
+                        function validateForm() {
+                            const email = document.getElementById('email').value.trim();
+                            const password = document.getElementById('password').value.trim();
+                            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                            if (!emailRegex.test(email)) {
+                                alert('Please enter a valid email address.');
+                                return false;
+                            }
+
+                            if (password.length < 3) {
+                                alert('Password must be at least 6 characters long.');
+                                return false;
+                            }
+
+                            return true;
+                        }
+                    </script>
+                                        
                     <!-- Mobile only register link -->
                     <div class="mt-8 text-center md:hidden">
                         <p class="text-gray-600">Don't have an account?</p>
