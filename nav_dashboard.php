@@ -14,6 +14,9 @@
             <?php if (isset($_SESSION['firstname'])): ?>
                 <a href="../dashboard/user.php" class="hover:text-secondary transition">Dashboard</a>
                 <a href="../settings/user.php" class="hover:text-secondary transition">Profile</a>
+                <?php if ($_SESSION['admin'] == 1): ?>
+                    <a href="../admin/dashboard.php" class="hover:text-secondary transition">Admin Dashboard</a>
+                <?php endif; ?>
                 <a href="../logout.php" class="bg-white text-white text-primary hhhh px-4 py-2 rounded-lg shadow hover:bg-opacity-90 transition animate-pulse">Sign Out</a>
                 
             <?php else: ?>

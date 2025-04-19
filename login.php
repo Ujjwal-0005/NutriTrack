@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
 
-    $sql = "SELECT firstname, lastname, password FROM users WHERE email = ?";
+    $sql = "SELECT firstname, admin, lastname, password FROM users WHERE email = ?";
     if (!$stmt = $conn->prepare($sql)) {
         die("Query preparation failed: " . $conn->error);
     }
@@ -46,13 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt->store_result();
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($firstname, $lastname, $hashed_password);
+        $stmt->bind_result($firstname, $admin, $lastname, $hashed_password);
         $stmt->fetch();
         if (password_verify($password, $hashed_password)) {
             $_SESSION['loggedin'] = true;
             $_SESSION['email'] = $email;
             $_SESSION['firstname'] = $firstname;
             $_SESSION['lastname'] = $lastname;
+            $_SESSION['admin'] = $admin;
             setcookie("email", $email, time() + (86400 * 30), "/");
             setcookie("firstname", $firstname, time() + (86400 * 30), "/");
             setcookie("lastname", $lastname, time() + (86400 * 30), "/");

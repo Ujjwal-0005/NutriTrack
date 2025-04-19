@@ -2,7 +2,6 @@
 session_start();
 include '../db.php';
 
-// Check if user is logged in and is an admin
 if (!isset($_SESSION['email']) || !isset($_SESSION['admin']) || $_SESSION['admin'] != 1) {
     header("Location: ../login.php");
     exit();
@@ -12,27 +11,21 @@ if (!$conn) {
     die("Database connection failed: " . mysqli_connect_error());
 }
 
-// Get stats for dashboard
-// Total users
 $sql_users = "SELECT COUNT(*) as total_users FROM users";
 $result_users = $conn->query($sql_users);
 $total_users = $result_users->fetch_assoc()['total_users'];
 
-// Total food entries
 $sql_foods = "SELECT COUNT(*) as total_foods FROM foods";
 $result_foods = $conn->query($sql_foods);
 $total_foods = $result_foods->fetch_assoc()['total_foods'];
 
-// Total workout entries
 $sql_workouts = "SELECT COUNT(*) as total_workouts FROM workouts";
 $result_workouts = $conn->query($sql_workouts);
 $total_workouts = $result_workouts->fetch_assoc()['total_workouts'];
 
-// Recent users
 $sql_recent_users = "SELECT * FROM users ORDER BY id DESC LIMIT 5";
 $result_recent_users = $conn->query($sql_recent_users);
 
-// Recent activities (combining foods and workouts)
 $sql_recent_activities = "
     (SELECT 'food' as type, f.id, f.food_name as activity_name, f.calories, f.email, f.date, u.firstname, u.lastname
      FROM foods f
@@ -50,7 +43,6 @@ $sql_recent_activities = "
 ";
 $result_recent_activities = $conn->query($sql_recent_activities);
 
-// System stats
 $server_info = $_SERVER['SERVER_SOFTWARE'];
 $php_version = phpversion();
 $mysql_version = $conn->server_info;
@@ -58,7 +50,6 @@ $max_upload = ini_get('upload_max_filesize');
 $max_post = ini_get('post_max_size');
 $memory_limit = ini_get('memory_limit');
 
-// Get monthly new users for the current year
 $sql_monthly_users = "SELECT 
     MONTH(created_at) as month, 
     COUNT(*) as count 
@@ -444,15 +435,11 @@ $conn->close();
             </div>
         </div>
     </footer>
-    usePointStyle: true,
-usePointStyle: true,
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // User Activity Chart
         const ctx = document.getElementById('userActivityChart').getContext('2d');
-        
-        // Define gradient backgrounds for better visual appeal
+
         const newUsersGradient = ctx.createLinearGradient(0, 0, 0, 400);
         newUsersGradient.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
         newUsersGradient.addColorStop(1, 'rgba(79, 70, 229, 0.0)');
