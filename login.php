@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
 
-    $sql = "SELECT firstname, lastname, password, admin FROM users WHERE email = ?";
+    $sql = "SELECT firstname, lastname, password FROM users WHERE email = ?";
     if (!$stmt = $conn->prepare($sql)) {
         die("Query preparation failed: " . $conn->error);
     }
@@ -46,23 +46,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt->store_result();
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($firstname, $lastname, $hashed_password, $admin);
+        $stmt->bind_result($firstname, $lastname, $hashed_password);
         $stmt->fetch();
         if (password_verify($password, $hashed_password)) {
             $_SESSION['loggedin'] = true;
             $_SESSION['email'] = $email;
             $_SESSION['firstname'] = $firstname;
             $_SESSION['lastname'] = $lastname;
-            $_SESSION['admin'] = $admin;
             setcookie("email", $email, time() + (86400 * 30), "/");
             setcookie("firstname", $firstname, time() + (86400 * 30), "/");
             setcookie("lastname", $lastname, time() + (86400 * 30), "/");
-            setcookie("admin", $admin, time() + (86400 * 30), "/");
-            if ($admin== 1) {
-                header("Location: admin/dashboard.php");
-            } else {
-                header("Location: dashboard/user.php");
-            }
+            setcookie("admin", 0, time() + (86400 * 30), "/");
+            header("Location: dashboard/user.php");
             exit();
         } else {
             $error = "Invalid password.";
@@ -109,8 +104,15 @@ $conn->close();
         }
     </style>
 </head>
-
-<body class="bg-slate-50 font-sans">
+<style>
+    body {
+        background-image: url('https://img.freepik.com/premium-photo/photo-portrait-highend-fitness-website-background_1077802-309192.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+</style>
+<body class="bg-slate-500 font-sans">
     <div class="min-h-screen flex flex-col">
         <?php include 'navigation.php'; ?>
         
@@ -118,7 +120,7 @@ $conn->close();
             <div class="w-full max-w-5xl flex overflow-hidden rounded-3xl shadow-2xl">
                 <!-- Left side - Image with overlay -->
                 <div class="hidden md:block w-1/2 bg-cover bg-center relative">
-                    <img src="https://true-elevate.com/wp-content/uploads/2024/12/1.jpg" alt="Fitness" class="w-full h-full object-cover">
+                    <img src="https://cbx-prod.b-cdn.net/COLOURBOX61567836.jpg?width=800&height=800&quality=70" alt="Fitness" class="w-full h-full object-cover">
                     <div class="absolute inset-0 hero-overlay flex flex-col justify-between p-8">
                         <div class="mb-auto">
                             <h2 class="text-4xl font-bold text-white mb-6">Welcome Back</h2>
@@ -151,7 +153,7 @@ $conn->close();
                         </div>
                     <?php endif; ?>
                     
-                    <form method="POST" class="space-y-6" onsubmit="return validateForm()">
+                    <form method="POST" class="space-y-6">
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                             <div class="relative">
@@ -176,33 +178,15 @@ $conn->close();
                             </div>
                         </div>
                         
+                        
+                        
                         <button type="submit" 
                             class="w-full flex justify-center items-center px-6 py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-all duration-300">
                             <span>Sign In</span>
                             <i class="ri-arrow-right-line ml-2"></i>
                         </button>
                     </form>
-
-                    <script>
-                        function validateForm() {
-                            const email = document.getElementById('email').value.trim();
-                            const password = document.getElementById('password').value.trim();
-                            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-                            if (!emailRegex.test(email)) {
-                                alert('Please enter a valid email address.');
-                                return false;
-                            }
-
-                            if (password.length < 3) {
-                                alert('Password must be at least 6 characters long.');
-                                return false;
-                            }
-
-                            return true;
-                        }
-                    </script>
-                                        
+                    
                     <!-- Mobile only register link -->
                     <div class="mt-8 text-center md:hidden">
                         <p class="text-gray-600">Don't have an account?</p>
@@ -216,3 +200,4 @@ $conn->close();
     </div>
 </body>
 </html>
+
