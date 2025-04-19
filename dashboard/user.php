@@ -12,11 +12,32 @@ if (!$conn) {
 $today = date('Y-m-d');
 $email = $_SESSION['email'];
 
+function ensureWorkoutTableExists($conn) {
+    $sql = "CREATE TABLE IF NOT EXISTS workouts (
+        id VARCHAR(32) PRIMARY KEY,
+        date DATE NOT NULL,
+        type VARCHAR(50) NOT NULL,
+        duration INT NOT NULL,
+        calories INT NOT NULL DEFAULT 0,
+        intensity VARCHAR(20) NOT NULL,
+        notes TEXT,
+        timestamp INT NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
+    )";
+    
+    if (!$conn->query($sql)) {
+        die("Error creating table: " . $conn->error);
+    }
+}
+
+ensureWorkoutTableExists($conn);
+
 $sql_calories_consumed = "SELECT COALESCE(SUM(calories), 0) as total_calories_consumed
                          FROM foods 
-                         WHERE date = ?";
+                         WHERE date = ? AND email = ?";
 $stmt = $conn->prepare($sql_calories_consumed);
-$stmt->bind_param("s", $today);
+$stmt->bind_param("ss", $today, $email);
 $stmt->execute();
 $result = $stmt->get_result();
 $calories_consumed = $result->fetch_assoc()['total_calories_consumed'];
@@ -24,9 +45,9 @@ $stmt->close();
 
 $sql_calories_burned = "SELECT COALESCE(SUM(calories), 0) as total_calories_burned
                        FROM workouts
-                       WHERE date = ?";
+                       WHERE date = ? AND email = ?";
 $stmt = $conn->prepare($sql_calories_burned);
-$stmt->bind_param("s", $today);
+$stmt->bind_param("ss", $today, $email);
 $stmt->execute();
 $result = $stmt->get_result();
 $calories_burned = $result->fetch_assoc()['total_calories_burned'];
@@ -37,9 +58,9 @@ $last_day_of_month = date('Y-m-t');
 
 $sql_workout_time = "SELECT COALESCE(SUM(duration), 0) as total_workout_time
                     FROM workouts
-                    WHERE date BETWEEN ? AND ?";
+                    WHERE date BETWEEN ? AND ? AND email = ?";
 $stmt = $conn->prepare($sql_workout_time);
-$stmt->bind_param("ss", $first_day_of_month, $last_day_of_month);
+$stmt->bind_param("sss", $first_day_of_month, $last_day_of_month, $email);
 $stmt->execute();
 $result = $stmt->get_result();
 $total_workout_time = $result->fetch_assoc()['total_workout_time'];

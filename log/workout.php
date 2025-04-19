@@ -2,7 +2,6 @@
 session_start();
 include "../db.php";
 
-// Check if workout table exists, create if not
 function ensureWorkoutTableExists($conn) {
     $sql = "CREATE TABLE IF NOT EXISTS workouts (
         id VARCHAR(32) PRIMARY KEY,
@@ -12,7 +11,9 @@ function ensureWorkoutTableExists($conn) {
         calories INT NOT NULL DEFAULT 0,
         intensity VARCHAR(20) NOT NULL,
         notes TEXT,
-        timestamp INT NOT NULL
+        timestamp INT NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
     )";
     
     if (!$conn->query($sql)) {
@@ -21,6 +22,28 @@ function ensureWorkoutTableExists($conn) {
 }
 
 ensureWorkoutTableExists($conn);
+function ensureFoodTableExists($conn) {
+    $sql = "CREATE TABLE IF NOT EXISTS foods (
+        id VARCHAR(32) PRIMARY KEY,
+        date DATE NOT NULL,
+        meal_type VARCHAR(50) NOT NULL,
+        food_name VARCHAR(100) NOT NULL,
+        calories INT NOT NULL DEFAULT 0,
+        protein FLOAT NOT NULL DEFAULT 0,
+        carbs FLOAT NOT NULL DEFAULT 0,
+        fat FLOAT NOT NULL DEFAULT 0,
+        notes TEXT,
+        timestamp INT NOT NULL,
+        email VARCHAR(100) NOT NULL,
+        FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
+    )";
+    
+    if (!$conn->query($sql)) {
+        die("Error creating table: " . $conn->error);
+    }
+}
+
+ensureFoodTableExists($conn);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = uniqid();
@@ -32,11 +55,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $notes = $_POST['notes'] ?? '';
     $timestamp = time();
 
-    $sql = "INSERT INTO workouts (id, date, type, duration, calories, intensity, notes, timestamp) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO workouts (id, date, type, duration, calories, intensity, notes, timestamp, email)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssisisi", $id, $date, $type, $duration, $calories, $intensity, $notes, $timestamp);
+    $stmt->bind_param("sssisisi", $id, $date, $type, $duration, $calories, $intensity, $notes, $timestamp, $_SESSION['email']);
     
     if (!$stmt->execute()) {
         die("Error saving workout: " . $stmt->error);
@@ -49,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (isset($_GET['delete']) && !empty($_GET['delete'])) {
     $idToDelete = $_GET['delete'];
     
-    $sql = "DELETE FROM workouts WHERE id = ?";
+    $sql = "DELETE FROM workouts WHERE id = ? AND email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $idToDelete);
     
@@ -62,7 +85,11 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
 }
 
 $workouts = [];
-$result = $conn->query("SELECT * FROM workouts ORDER BY date DESC");
+$sql = "SELECT * FROM workouts WHERE email = ? ORDER BY date DESC";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $_SESSION['email']);
+$stmt->execute();
+$result = $stmt->get_result();
 if ($result) {
     while ($row = $result->fetch_assoc()) {
         $workouts[] = $row;

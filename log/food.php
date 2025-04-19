@@ -13,7 +13,9 @@ function ensureFoodTableExists($conn) {
         carbs FLOAT NOT NULL DEFAULT 0,
         fat FLOAT NOT NULL DEFAULT 0,
         notes TEXT,
-        timestamp INT NOT NULL
+        timestamp INT NOT NULL,
+        email VARCHAR(100) NOT NULL,
+        FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
     )";
     
     if (!$conn->query($sql)) {
@@ -35,11 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $notes = $_POST['notes'] ?? '';
     $timestamp = time();
 
-    $sql = "INSERT INTO foods (id, date, meal_type, food_name, calories, protein, carbs, fat, notes, timestamp) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO foods (id, date, meal_type, food_name, calories, protein, carbs, fat, notes, timestamp, email)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssiddssi", $id, $date, $meal_type, $food_name, $calories, $protein, $carbs, $fat, $notes, $timestamp);
+    $stmt->bind_param("ssssiddssis", $id, $date, $meal_type, $food_name, $calories, $protein, $carbs, $fat, $notes, $timestamp, $_SESSION['email']);
     
     if (!$stmt->execute()) {
         die("Error saving food: " . $stmt->error);
@@ -52,9 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (isset($_GET['delete']) && !empty($_GET['delete'])) {
     $idToDelete = $_GET['delete'];
     
-    $sql = "DELETE FROM foods WHERE id = ?";
+    $sql = "DELETE FROM foods WHERE id = ? AND email = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $idToDelete);
+    $stmt->bind_param("ss", $idToDelete, $_SESSION['email']);
     
     if (!$stmt->execute()) {
         die("Error deleting food: " . $stmt->error);
@@ -65,7 +67,11 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
 }
 
 $foods = [];
-$result = $conn->query("SELECT * FROM foods ORDER BY date DESC, timestamp DESC");
+$result = $conn->query("SELECT * FROM foods ORDER BY date DESC, timestamp DESC WHERE email = ?");
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $_SESSION['email']);
+$stmt->execute();
+$result = $stmt->get_result();
 if ($result) {
     while ($row = $result->fetch_assoc()) {
         $foods[] = $row;
