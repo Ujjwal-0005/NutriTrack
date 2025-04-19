@@ -2,7 +2,7 @@
 session_start();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,14 +38,164 @@ session_start();
         .hero-overlay {
             background: linear-gradient(to right, rgba(17, 24, 39, 0.8), rgba(17, 24, 39, 0.4));
         }
+        .gradient-text {
+    background: linear-gradient(45deg, #4F46E5, #10B981);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hover-scale {
+    transition: transform 0.3s ease;
+}
+.hover-scale:hover {
+    transform: scale(1.02);
+}
+
+.shadow-custom {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.button-glow:hover {
+    box-shadow: 0 0 15px rgba(79, 70, 229, 0.6);
+}
+
+.section-divider {
+    position: relative;
+    height: 4px;
+    background: linear-gradient(90deg, #4F46E5, #10B981);
+    border-radius: 2px;
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+html, body {
+    scroll-behavior: smooth;
+    line-height: 1.6;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.025em;
+}
+
+
+button, .button, a[href].button {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+button:hover, .button:hover, a[href].button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+input, select, textarea {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #4F46E5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+
+.container {
+    transition: all 0.3s ease;
+}
+
+
+.rounded-2xl {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.rounded-2xl:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+
+nav a {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+nav a:after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #4F46E5;
+    transition: width 0.3s ease;
+}
+.alag{
+    background-color: #003366;
+background-image: linear-gradient(315deg, #003366 0%, #242124 74%);
+
+}
+nav a:hover:after {
+    width: 100%;
+}
+
+.bg-gradient {
+    background: linear-gradient(135deg, #4F46E5, #10B981);
+}
+
+
+.transition-custom {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hhh{
+    background-color: #003153;
+    background-image: linear-gradient(315deg, #003153 0%, #0abab5 74%);
+}
+.hover-lift {
+    transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+}
+.card-hover-effect {
+    transition: all 0.3s ease;
+}
+.card-hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
     </style>
 </head>
+
 
 <body class="bg-slate-50 font-sans">
     <div id="main" class="w-full">
         <!-- Hero Section -->
         <div class="relative h-screen">
-            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://true-elevate.com/wp-content/uploads/2024/12/1.jpg')"></div>
+            <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20210115/pngtree-abstract-geometric-background-blue-navy-dark-theme-image_519415.jpg');"></div>
             
             <div class="absolute inset-0 hero-overlay"></div>
 
@@ -53,19 +203,19 @@ session_start();
                 <?php include 'navigation.php'; ?>
                 
                 <div class="container mx-auto px-6 h-[85%] flex flex-col justify-center">
-                    <div class="max-w-3xl mx-auto text-center">
-                        <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight leading-tight">
-                            IT'S GROUP FITNESS REINVENTED
+                    <div class="max-w-3xl mx-auto text-center glass-effect p-8 rounded-xl">
+                        <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight leading-tight text-shadow">
+                            The Greatest Wealth Is Health
                         </h1>
                         <p class="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-                            Transform your body, elevate your mind. Join the revolution in fitness training.
+                        The ultimate fitness challenge tracker for achieving your health and wellness goals
                         </p>
                         <div class="flex flex-wrap justify-center gap-4">
-                            <a href="#programs" class="px-6 py-3 bg-accent hover:bg-[#a5c104] text-black font-semibold rounded-lg transition-all duration-300 flex items-center gap-2">
+                            <a href="read.php" class="hhh px-6 py-3 bg-accent hover:bg-[green-700] text-amber-300 hover:text-white font-semibold rounded-lg transition-all duration-300 flex items-center gap-2 button-glow hover-scale">
                                 Read More 
                                 <div class="h-2 w-2 bg-black rounded-full"></div>
                             </a>
-                            <a href="#contact" class="px-6 py-3 bg-white hover:bg-gray-100 text-dark font-semibold rounded-lg transition-all duration-300">
+                            <a href="contact.php" class="hhh px-6 py-3 bg-white hover:bg-gray-100 text-amber-300 hover:text-white font-semibold button-glow rounded-lg hover-scale transition-all duration-300">
                                 CONTACT US
                             </a>
                         </div>
@@ -73,89 +223,48 @@ session_start();
                 </div>
                 
                 <!-- Marquee Banner -->
-                <div class="absolute bottom-0 w-full bg-accent py-3 overflow-hidden whitespace-nowrap">
-                    <div class="marquee-container flex gap-5">
-                        <div class="marque flex gap-3 items-center">
-                            <h1 class="font-semibold">YOGA SERVICE GYM</h1>
-                            <div class="h-2 w-2 rounded-full bg-black"></div>
+                <div class="absolute bottom-0 w-full bg-gradient-to-r from-accent to-secondary py-4 overflow-hidden whitespace-nowrap shadow-lg">
+                    <div class="marquee-container flex gap-8 items-center">
+                        <div class="marque flex gap-4 items-center">
+                            <i class="ri-yoga-line text-xl"></i>
+                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">YOGA SERVICE GYM</h1>
+                            <div class="h-2 w-2 rounded-full bg-dark animate-pulse"></div>
                         </div>
-                        <div class="marque flex gap-3 items-center">
-                            <h1 class="font-semibold">HEALTH AND GYM</h1>
-                            <div class="h-2 w-2 rounded-full bg-black"></div>
+                        <div class="marque flex gap-4 items-center">
+                            <i class="ri-heart-pulse-line text-xl"></i>
+                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">HEALTH AND GYM</h1>
+                            <div class="h-2 w-2 rounded-full bg-dark animate-pulse"></div>
                         </div>
-                        <div class="marque flex gap-3 items-center">
-                            <h1 class="font-semibold">FITNESS AND GYM</h1>
-                            <div class="h-2 w-2 rounded-full bg-black"></div>
+                        <div class="marque flex gap-4 items-center">
+                            <i class="ri-run-line text-xl"></i>
+                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">FITNESS AND GYM</h1>
+                            <div class="h-2 w-2 rounded-full bg-dark animate-pulse"></div>
                         </div>
-                        <div class="marque flex gap-3 items-center">
-                            <h1 class="font-semibold">PURE GYM SPACE</h1>
-                            <div class="h-2 w-2 rounded-full bg-black"></div>
-                        </div>
-                        
-                        <!-- Duplicates for Seamless Loop -->
-                        <div class="marque flex gap-3 items-center">
-                            <h1 class="font-semibold">YOGA SERVICE GYM</h1>
-                            <div class="h-2 w-2 rounded-full bg-black"></div>
-                        </div>
-                        <div class="marque flex gap-3 items-center">
-                            <h1 class="font-semibold">HEALTH AND GYM</h1>
-                            <div class="h-2 w-2 rounded-full bg-black"></div>
+                        <div class="marque flex gap-4 items-center">
+                            <i class="ri-medal-line text-xl"></i>
+                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">PURE GYM SPACE</h1>
+                            <div class="h-2 w-2 rounded-full bg-dark animate-pulse"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
-<!--         <!-- Products Section -->
-        <div class="py-20 px-6 border-b border-gray-200" id="products">
-            <div class="container mx-auto max-w-7xl">
-                <div class="mb-16 text-center">
-                    <h2 class="text-4xl md:text-5xl font-bold mb-4 text-dark">Our Products</h2>
-                    <p class="text-gray-600 max-w-2xl mx-auto">Discover our premium fitness equipment and accessories designed for optimal performance.</p>
-                </div>
-                
-                <div class="relative">
-                    <!-- Navigation Controls -->
-                    <div class="absolute -top-14 right-0 flex space-x-3 z-10">
-                    <button id="prevBtn" class="p-3 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all duration-300">
-                        <i class="ri-arrow-left-s-line text-xl"></i>
-                    </button>
-                    <button id="nextBtn" class="p-3 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all duration-300">
-                        <i class="ri-arrow-right-s-line text-xl"></i>
-                    </button>
-                    </div>
-
-                    <!-- Slider Container with Backdrop Blur and Gradient -->
-                    <div id="sliderContainer" class="overflow-x-hidden scrollbar-hide relative">
-                    <div class="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-slate-50 to-transparent z-10"></div>
-                    <div class="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-slate-50 to-transparent z-10"></div>
-                    
-                    <div id="imageSlider" class="flex gap-6 transition-transform duration-500 ease-out py-4">
-                        <!-- Slides will be dynamically inserted here -->
-                    </div>
-                    </div>
-                    
-                    <!-- Pagination Dots -->
-                    <div class="flex justify-center mt-8 gap-2" id="paginationDots">
-                    <!-- Dots will be dynamically inserted here -->
-                    </div>
-                </div>
-            </div>
-        </div> -->
+       
         
         <!-- BMI Calculator Section -->
-        <div class="py-20 px-6 bg-white" id="bmi">
+        <div class="py-20 px-6" id="bmi" style="background-image: url('https://png.pngtree.com/background/20220716/original/pngtree-tiktok-the-publicity-background-of-national-fitness-campaign-picture-image_1631407.jpg'); background-size: cover; background-position: center;">
             <div class="container mx-auto max-w-7xl">
                 <div class="text-center mb-16">
-                    <h2 class="text-4xl md:text-5xl font-bold mb-4 text-dark">BMI Calculator</h2>
-                    <p class="text-gray-600 max-w-2xl mx-auto">Check your Body Mass Index and understand what it means for your health.</p>
+                    <h2 class="text-4xl md:text-5xl text-white font-bold mb-4 text-dark">BMI Calculator</h2>
+                    <p class="text-gray-600 max-w-2xl text-white mx-auto">Check your Body Mass Index and understand what it means for your health.</p>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- BMI Form -->
-                    <div class="bg-slate-50 rounded-2xl p-8 shadow-lg">
-                        <h3 class="text-2xl font-bold mb-6">Calculate Your BMI</h3>
-                        <p class="text-gray-600 mb-6">
+                    <div class="alag rounded-2xl p-8 shadow-lg" >
+                        <h3 class="text-2xl text-white  font-bold mb-6">Calculate Your BMI</h3>
+                        <p class="text-white mb-6">
                             Body Mass Index (BMI) is a measure used to determine if a person's weight is in a healthy range.
                         </p>
                         
@@ -174,7 +283,7 @@ session_start();
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div class="border border-gray-200 px-4 py-3 bg-white rounded-lg shadow-sm">
                                     <label for="age" class="block text-xs text-gray-500 mb-1">Age</label>
-                                    <input type="number" id="age" placeholder="Enter age" class="w-full bg-transparent outline-none text-gray-800">
+                                    <input type="number" id="age" placeholder="Enter age" required class="w-full bg-transparent outline-none text-gray-800">
                                 </div>
                                 <div class="border border-gray-200 px-4 py-3 bg-white rounded-lg shadow-sm">
                                     <label for="gender" class="block text-xs text-gray-500 mb-1">Gender</label>
@@ -202,7 +311,7 @@ session_start();
                     </div>
                     
                     <!-- BMI Information -->
-                    <div class="bg-gradient-to-br from-primary to-indigo-700 text-white rounded-2xl p-8 shadow-lg">
+                    <div class="alag text-white rounded-2xl p-8 shadow-lg">
                         <h3 class="text-2xl font-bold mb-8">BMI Categories</h3>
                         
                         <div class="space-y-6">
@@ -212,7 +321,7 @@ session_start();
                             </div>
                             
                             <div class="flex justify-between items-center border-b border-white/20 pb-3">
-                                <div class="font-medium">18.5 - 24.9</div>
+                                <div class="font-medsium">18.5 - 24.9</div>
                                 <div class="font-bold bg-accent/80 text-dark py-1 px-4 rounded-full">Healthy</div>
                             </div>
                             
@@ -246,19 +355,17 @@ session_start();
         </div>
         
         <!-- CTA Section -->
-        <div class="py-20 px-6 bg-gradient-to-r from-primary to-indigo-800 text-white">
+        <div class="py-20 px-6 bg-gradient-to-tl from-blue-600 to-blue-950 text-white">
             <div class="container mx-auto max-w-7xl">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                     <div>
                         <h2 class="text-4xl font-bold mb-4">Ready to Start Your Fitness Journey?</h2>
                         <p class="text-xl opacity-90 mb-8">Join our community today and transform your body with expert guidance and support.</p>
                         <div class="flex flex-wrap gap-4">
-                            <a href="#membership" class="px-6 py-3 bg-accent hover:bg-[#a5c104] text-black font-semibold rounded-lg transition-all duration-300">
+                            <a href="register.php" class="px-6 py-3 bg-accent hover:bg-[#a5c104] text-black font-semibold rounded-lg transition-all duration-300">
                                 Join Now
                             </a>
-                            <a href="#programs" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-all duration-300 backdrop-blur-sm">
-                                View Programs
-                            </a>
+                        
                         </div>
                     </div>
                     <div class="hidden md:flex justify-end">
@@ -299,8 +406,8 @@ session_start();
             products.forEach((product, index) => {
                 const card = document.createElement('div');
                 card.className = 'min-w-[280px] bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105';
-                card.innerHTML = `
-                    <div class="h-44 overflow-hidden">
+                card.innerHTML = `    
+                <div class="h-44 overflow-hidden">
                         <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover">
                     </div>
                     <div class="p-6">

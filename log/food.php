@@ -67,7 +67,7 @@ if (isset($_GET['delete']) && !empty($_GET['delete'])) {
 }
 
 $foods = [];
-$result = $conn->query("SELECT * FROM foods ORDER BY date DESC, timestamp DESC WHERE email = ?");
+$sql = "SELECT * FROM foods WHERE email = ? ORDER BY date DESC, timestamp DESC";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $_SESSION['email']);
 $stmt->execute();

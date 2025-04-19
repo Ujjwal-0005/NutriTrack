@@ -6,6 +6,9 @@
             <?php if (isset($_SESSION['firstname'])): ?>
                 <a href="../dashboard/user.php" class="hover:text-secondary transition">Dashboard</a>
                 <a href="../settings/user.php" class="hover:text-secondary transition">Profile</a>
+                <?php if ($_SESSION['admin'] == 1): ?>
+                    <a href="../admin/dashboard.php" class="hover:text-secondary transition">Admin Panel</a>
+                <?php endif; ?>
                 <a href="../logout.php" class="bg-white text-primary px-4 py-2 rounded-lg shadow hover:bg-opacity-90 transition">Sign Out</a>
             <?php else: ?>
                 <a href="../login.php" class="bg-white text-primary px-4 py-2 rounded-lg shadow hover:bg-opacity-90 transition">Login</a>

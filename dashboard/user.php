@@ -1,15 +1,145 @@
 <?php
 session_start();
+include '../db.php';
+if (!isset($_SESSION['email'])) {
+    header("Location: login.php");
+    exit();
+}
+if (!$conn) {
+    die("Database connection failed: " . mysqli_connect_error());
+}
+
+$today = date('Y-m-d');
+$email = $_SESSION['email'];
+
+function ensureWorkoutTableExists($conn) {
+    $sql = "CREATE TABLE IF NOT EXISTS workouts (
+        id VARCHAR(32) PRIMARY KEY,
+        date DATE NOT NULL,
+        type VARCHAR(50) NOT NULL,
+        duration INT NOT NULL,
+        calories INT NOT NULL DEFAULT 0,
+        intensity VARCHAR(20) NOT NULL,
+        notes TEXT,
+        timestamp INT NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
+    )";
+    
+    if (!$conn->query($sql)) {
+        die("Error creating table: " . $conn->error);
+    }
+}
+
+ensureWorkoutTableExists($conn);
+
+$sql_calories_consumed = "SELECT COALESCE(SUM(calories), 0) as total_calories_consumed
+                         FROM foods 
+                         WHERE date = ? AND email = ?";
+$stmt = $conn->prepare($sql_calories_consumed);
+$stmt->bind_param("ss", $today, $email);
+$stmt->execute();
+$result = $stmt->get_result();
+$calories_consumed = $result->fetch_assoc()['total_calories_consumed'];
+$stmt->close();
+
+$sql_calories_burned = "SELECT COALESCE(SUM(calories), 0) as total_calories_burned
+                       FROM workouts
+                       WHERE date = ? AND email = ?";
+$stmt = $conn->prepare($sql_calories_burned);
+$stmt->bind_param("ss", $today, $email);
+$stmt->execute();
+$result = $stmt->get_result();
+$calories_burned = $result->fetch_assoc()['total_calories_burned'];
+$stmt->close();
+
+$first_day_of_month = date('Y-m-01');
+$last_day_of_month = date('Y-m-t');
+
+$sql_workout_time = "SELECT COALESCE(SUM(duration), 0) as total_workout_time
+                    FROM workouts
+                    WHERE date BETWEEN ? AND ? AND email = ?";
+$stmt = $conn->prepare($sql_workout_time);
+$stmt->bind_param("sss", $first_day_of_month, $last_day_of_month, $email);
+$stmt->execute();
+$result = $stmt->get_result();
+$total_workout_time = $result->fetch_assoc()['total_workout_time'];
+$stmt->close();
+
+$start_date = date('Y-m-d', strtotime('-6 days'));
+$end_date = $today;
+
+$sql_last_seven_days = "SELECT 
+    a.date,
+    COALESCE(SUM(f.calories), 0) as calories_consumed,
+    COALESCE(SUM(w.calories), 0) as calories_burned
+FROM (
+    SELECT CURDATE() - INTERVAL n DAY as date
+    FROM (
+        SELECT 0 as n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 
+        UNION SELECT 4 UNION SELECT 5 UNION SELECT 6
+    ) numbers
+) a
+LEFT JOIN foods f ON a.date = f.date
+LEFT JOIN workouts w ON a.date = w.date
+WHERE a.date BETWEEN ? AND ?
+GROUP BY a.date
+ORDER BY a.date";
+
+$stmt = $conn->prepare($sql_last_seven_days);
+$stmt->bind_param("ss", $start_date, $end_date);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$labels = [];
+$consumed_data = [];
+$burned_data = [];
+$net_data = [];
+
+$total_consumed = 0;
+$total_burned = 0;
+$days_count = 0;
+
+while ($row = $result->fetch_assoc()) {
+    $date = date('M d', strtotime($row['date']));
+    $labels[] = $date;
+    $consumed_data[] = $row['calories_consumed'];
+    $burned_data[] = $row['calories_burned'];
+    $net_data[] = $row['calories_consumed'] - $row['calories_burned'];
+    
+    $total_consumed += $row['calories_consumed'];
+    $total_burned += $row['calories_burned'];
+    $days_count++;
+}
+$stmt->close();
+
+$conn->close();
+
+$total_workout_time_hours = floor($total_workout_time / 60);
+$total_workout_time_minutes = $total_workout_time % 60;
+$total_workout_time_formatted = sprintf("%02d:%02d", $total_workout_time_hours, $total_workout_time_minutes);
+$total_calories_consumed_formatted = number_format($calories_consumed, 0, '.', ',');
+$total_calories_burned_formatted = number_format($calories_burned, 0, '.', ',');
+
+$avg_daily_consumed = $days_count > 0 ? round($total_consumed / $days_count) : 0;
+$avg_daily_burned = $days_count > 0 ? round($total_burned / $days_count) : 0;
+$net_balance = $avg_daily_consumed - $avg_daily_burned;
+$net_balance_formatted = ($net_balance >= 0 ? '+' : '') . $net_balance;
+
+$chart_labels = json_encode($labels);
+$chart_consumed_data = json_encode($consumed_data);
+$chart_burned_data = json_encode($burned_data);
+$chart_net_data = json_encode($net_data);
 ?>
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriTrack2025 | Your Ultimate Fitness Companion</title>
+    <title>Dashboard | NutriTrack 2025</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -17,7 +147,6 @@ session_start();
                     colors: {
                         primary: '#4F46E5',
                         secondary: '#10B981',
-                        accent: '#bfe305',
                         dark: '#111827',
                     },
                     fontFamily: {
@@ -27,495 +156,312 @@ session_start();
             }
         }
     </script>
-    <style>
-         .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-        .hero-overlay {
-            background: linear-gradient(to right, rgba(17, 24, 39, 0.8), rgba(17, 24, 39, 0.4));
-        }
-        .gradient-text {
-    background: linear-gradient(45deg, #4F46E5, #10B981);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.glass-effect {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.hover-scale {
-    transition: transform 0.3s ease;
-}
-.hover-scale:hover {
-    transform: scale(1.02);
-}
-
-.shadow-custom {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.text-shadow {
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.button-glow:hover {
-    box-shadow: 0 0 15px rgba(79, 70, 229, 0.6);
-}
-
-.section-divider {
-    position: relative;
-    height: 4px;
-    background: linear-gradient(90deg, #4F46E5, #10B981);
-    border-radius: 2px;
-}
-
-.animate-float {
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-}
-
-html, body {
-    scroll-behavior: smooth;
-    line-height: 1.6;
-}
-
-
-h1, h2, h3, h4, h5, h6 {
-    letter-spacing: -0.025em;
-}
-
-
-button, .button, a[href].button {
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-button:hover, .button:hover, a[href].button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-
-input, select, textarea {
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-}
-
-input:focus, select:focus, textarea:focus {
-    border-color: #4F46E5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-}
-
-
-.container {
-    transition: all 0.3s ease;
-}
-
-
-.rounded-2xl {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-}
-
-.rounded-2xl:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-}
-
-
-nav a {
-    position: relative;
-    transition: all 0.3s ease;
-}
-
-nav a:after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: #4F46E5;
-    transition: width 0.3s ease;
-}
-.alag{
-    background-color: #003366;
-background-image: linear-gradient(315deg, #003366 0%, #242124 74%);
-
-}
-nav a:hover:after {
-    width: 100%;
-}
-
-.bg-gradient {
-    background: linear-gradient(135deg, #4F46E5, #10B981);
-}
-
-
-.transition-custom {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.hhh{
-    background-color: #003153;
-    background-image: linear-gradient(315deg, #003153 0%, #0abab5 74%);
-}
-.hover-lift {
-    transition: transform 0.3s ease;
-}
-
-.hover-lift:hover {
-    transform: translateY(-4px);
-}
-.card-hover-effect {
-    transition: all 0.3s ease;
-}
-.card-hover-effect:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-    </style>
 </head>
-
-
-<body class="bg-slate-50 font-sans">
-    <div id="main" class="w-full">
-        <!-- Hero Section -->
-        <div class="relative h-screen">
-            <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20210115/pngtree-abstract-geometric-background-blue-navy-dark-theme-image_519415.jpg');"></div>
-            
-            <div class="absolute inset-0 hero-overlay"></div>
-
-            <div class="relative h-full">
-                <?php include 'navigation.php'; ?>
-                
-                <div class="container mx-auto px-6 h-[85%] flex flex-col justify-center">
-                    <div class="max-w-3xl mx-auto text-center glass-effect p-8 rounded-xl">
-                        <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight leading-tight text-shadow">
-                            The Greatest Wealth Is Health
-                        </h1>
-                        <p class="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-                        The ultimate fitness challenge tracker for achieving your health and wellness goals
-                        </p>
-                        <div class="flex flex-wrap justify-center gap-4">
-                            <a href="read.php" class="hhh px-6 py-3 bg-accent hover:bg-[green-700] text-amber-300 hover:text-white font-semibold rounded-lg transition-all duration-300 flex items-center gap-2 button-glow hover-scale">
-                                Read More 
-                                <div class="h-2 w-2 bg-black rounded-full"></div>
-                            </a>
-                            <a href="contact.php" class="hhh px-6 py-3 bg-white hover:bg-gray-100 text-amber-300 hover:text-white font-semibold button-glow rounded-lg hover-scale transition-all duration-300">
-                                CONTACT US
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Marquee Banner -->
-                <div class="absolute bottom-0 w-full bg-gradient-to-r from-accent to-secondary py-4 overflow-hidden whitespace-nowrap shadow-lg">
-                    <div class="marquee-container flex gap-8 items-center">
-                        <div class="marque flex gap-4 items-center">
-                            <i class="ri-yoga-line text-xl"></i>
-                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">YOGA SERVICE GYM</h1>
-                            <div class="h-2 w-2 rounded-full bg-dark animate-pulse"></div>
-                        </div>
-                        <div class="marque flex gap-4 items-center">
-                            <i class="ri-heart-pulse-line text-xl"></i>
-                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">HEALTH AND GYM</h1>
-                            <div class="h-2 w-2 rounded-full bg-dark animate-pulse"></div>
-                        </div>
-                        <div class="marque flex gap-4 items-center">
-                            <i class="ri-run-line text-xl"></i>
-                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">FITNESS AND GYM</h1>
-                            <div class="h-2 w-2 rounded-full bg-dark animate-pulse"></div>
-                        </div>
-                        <div class="marque flex gap-4 items-center">
-                            <i class="ri-medal-line text-xl"></i>
-                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">PURE GYM SPACE</h1>
-                            <div class="h-2 w-2 rounded-full bg-dark animate-pulse"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<body class="bg-slate-50 min-h-screen">
+    <div class="bg-gradient-to-r from-primary to-indigo-800 text-white">
+        <?php include '../nav_dashboard.php'; ?>
+        <div class="container mx-auto px-6 py-16">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Welcome, <?php echo $_SESSION['firstname']; ?> 👋</h1>
+            <p class="text-xl opacity-90 max-w-2xl">Track your fitness progress and nutritional intake with our advanced dashboard. Stay on top of your health goals.</p>
         </div>
-        
-       
-        
-        <!-- BMI Calculator Section -->
-        <div class="py-20 px-6" id="bmi" style="background-image: url('https://png.pngtree.com/background/20220716/original/pngtree-tiktok-the-publicity-background-of-national-fitness-campaign-picture-image_1631407.jpg'); background-size: cover; background-position: center;">
-            <div class="container mx-auto max-w-7xl">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl md:text-5xl text-white font-bold mb-4 text-dark">BMI Calculator</h2>
-                    <p class="text-gray-600 max-w-2xl text-white mx-auto">Check your Body Mass Index and understand what it means for your health.</p>
+    </div>
+
+    <div class="container mx-auto px-6 -mt-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-2xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-700">Calories Consumed</h2>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">Today</span>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- BMI Form -->
-                    <div class="alag rounded-2xl p-8 shadow-lg" >
-                        <h3 class="text-2xl text-white  font-bold mb-6">Calculate Your BMI</h3>
-                        <p class="text-white mb-6">
-                            Body Mass Index (BMI) is a measure used to determine if a person's weight is in a healthy range.
-                        </p>
-                        
-                        <form action="" class="mt-6">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                                <div class="border border-gray-200 px-4 py-3 bg-white rounded-lg shadow-sm">
-                                    <label for="height" class="block text-xs text-gray-500 mb-1">Height (Inches)</label>
-                                    <input type="number" id="height" placeholder="Enter height" class="w-full bg-transparent outline-none text-gray-800">
-                                </div>
-                                <div class="border border-gray-200 px-4 py-3 bg-white rounded-lg shadow-sm">
-                                    <label for="weight" class="block text-xs text-gray-500 mb-1">Weight (lbs)</label>
-                                    <input type="number" id="weight" placeholder="Enter weight" class="w-full bg-transparent outline-none text-gray-800">
-                                </div>
-                            </div>
-                
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div class="border border-gray-200 px-4 py-3 bg-white rounded-lg shadow-sm">
-                                    <label for="age" class="block text-xs text-gray-500 mb-1">Age</label>
-                                    <input type="number" id="age" placeholder="Enter age" required class="w-full bg-transparent outline-none text-gray-800">
-                                </div>
-                                <div class="border border-gray-200 px-4 py-3 bg-white rounded-lg shadow-sm">
-                                    <label for="gender" class="block text-xs text-gray-500 mb-1">Gender</label>
-                                    <select id="gender" class="w-full bg-transparent outline-none text-gray-800">
-                                        <option value="">Select gender</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                </div>
-                            </div>
-                
-                            <button type="button" onclick="calculateBMI()" 
-                                class="mt-8 flex gap-2 px-6 py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors">
-                                <span>Calculate BMI</span>
-                                <i class="fas fa-calculator"></i>
-                            </button>
-                        </form>
-                        
-                        <div id="result" class="mt-6 p-4 bg-white rounded-lg border border-gray-200 hidden">
-                            <h4 class="font-bold text-lg mb-2">Your Result:</h4>
-                            <div id="bmi-value" class="text-3xl font-bold text-primary"></div>
-                            <div id="bmi-category" class="mt-2 font-medium"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- BMI Information -->
-                    <div class="alag text-white rounded-2xl p-8 shadow-lg">
-                        <h3 class="text-2xl font-bold mb-8">BMI Categories</h3>
-                        
-                        <div class="space-y-6">
-                            <div class="flex justify-between items-center border-b border-white/20 pb-3">
-                                <div class="font-medium">Below 18.5</div>
-                                <div class="font-bold bg-white/20 py-1 px-4 rounded-full">Underweight</div>
-                            </div>
-                            
-                            <div class="flex justify-between items-center border-b border-white/20 pb-3">
-                                <div class="font-medsium">18.5 - 24.9</div>
-                                <div class="font-bold bg-accent/80 text-dark py-1 px-4 rounded-full">Healthy</div>
-                            </div>
-                            
-                            <div class="flex justify-between items-center border-b border-white/20 pb-3">
-                                <div class="font-medium">25 - 29.9</div>
-                                <div class="font-bold bg-white/20 py-1 px-4 rounded-full">Overweight</div>
-                            </div>
-                            
-                            <div class="flex justify-between items-center">
-                                <div class="font-medium">30.0 & Above</div>
-                                <div class="font-bold bg-white/20 py-1 px-4 rounded-full">Obese</div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-12 bg-white/10 p-6 rounded-xl">
-                            <h4 class="text-xl font-bold mb-4">What does BMI tell you?</h4>
-                            <p class="text-white/80">
-                                BMI is a measurement of a person's leanness or corpulence based on their height and weight, and is intended to quantify tissue mass. It is widely used as a general indicator of whether a person has a healthy body weight for their height.
-                            </p>
-                            <div class="mt-4 flex items-center">
-                                <span class="mr-2 text-white/80">BMR</span>
-                                <span class="font-bold">Metabolic Rate</span>
-                                <span class="mx-2 text-white/80">/</span>
-                                <span class="mr-2 text-white/80">BMI</span>
-                                <span class="font-bold">Body Mass Index</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- CTA Section -->
-        <div class="py-20 px-6 bg-gradient-to-tl from-blue-600 to-blue-950 text-white">
-            <div class="container mx-auto max-w-7xl">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-utensils text-4xl text-blue-500 mr-4"></i>
                     <div>
-                        <h2 class="text-4xl font-bold mb-4">Ready to Start Your Fitness Journey?</h2>
-                        <p class="text-xl opacity-90 mb-8">Join our community today and transform your body with expert guidance and support.</p>
-                        <div class="flex flex-wrap gap-4">
-                            <a href="register.php" class="px-6 py-3 bg-accent hover:bg-[#a5c104] text-black font-semibold rounded-lg transition-all duration-300">
-                                Join Now
-                            </a>
-                        
-                        </div>
+                        <p class="text-3xl font-bold text-blue-600"><?php echo $total_calories_consumed_formatted; ?></p>
+                        <p class="text-sm text-gray-500">kilocalories</p>
                     </div>
-                    <div class="hidden md:flex justify-end">
-                        <div class="w-72 h-72 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                            <i class="fas fa-dumbbell text-6xl"></i>
-                        </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-500">
+                    <a href="../log/food.php" class="text-primary hover:underline flex items-center">
+                        <span>Log your meals</span>
+                        <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-700">Calories Burned</h2>
+                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Today</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-fire-flame-curved text-4xl text-green-500 mr-4"></i>
+                    <div>
+                        <p class="text-3xl font-bold text-green-600"><?php echo $total_calories_burned_formatted; ?></p>
+                        <p class="text-sm text-gray-500">kilocalories</p>
                     </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-500">
+                    <a href="../log/workout.php" class="text-primary hover:underline flex items-center">
+                        <span>Log your workouts</span>
+                        <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-700">Total Workout Time</h2>
+                    <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded">This Month</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-stopwatch text-4xl text-purple-500 mr-4"></i>
+                    <div>
+                        <p class="text-3xl font-bold text-purple-600"><?php echo $total_workout_time_formatted; ?></p>
+                        <p class="text-sm text-gray-500">hours</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+            <div class="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-chart-line text-primary mr-2"></i> Health Overview
+                </h2>
+                
+                <div class="bg-gray-50 rounded-xl p-4 h-64">
+                    <canvas id="calorieChart"></canvas>
+                </div>
+                
+                <div class="mt-6 grid grid-cols-3 gap-4">
+                    <div class="bg-blue-50 p-4 rounded-xl text-center">
+                        <p class="text-gray-600 text-sm">Average Daily</p>
+                        <p class="font-bold text-blue-600"><?php echo number_format($avg_daily_consumed, 0); ?> kcal</p>
+                        <p class="text-xs text-gray-500">consumption</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-xl text-center">
+                        <p class="text-gray-600 text-sm">Average Daily</p>
+                        <p class="font-bold text-green-600"><?php echo number_format($avg_daily_burned, 0); ?> kcal</p>
+                        <p class="text-xs text-gray-500">burned</p>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-xl text-center">
+                        <p class="text-gray-600 text-sm">Net Balance</p>
+                        <p class="font-bold text-purple-600"><?php echo $net_balance_formatted; ?> kcal</p>
+                        <p class="text-xs text-gray-500">weekly avg.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-list-check text-secondary mr-2"></i> Quick Actions
+                </h2>
+                
+                <div class="space-y-4">
+                    <a href="../log/food.php" class="block bg-blue-50 hover:bg-blue-100 p-4 rounded-xl transition-colors">
+                        <div class="flex items-center">
+                            <div class="rounded-full bg-blue-100 p-3 mr-4">
+                                <i class="fas fa-utensils text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Log Food Intake</h3>
+                                <p class="text-sm text-gray-600">Record your meals and nutrition</p>
+                            </div>
+                            <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="../log/workout.php" class="block bg-green-50 hover:bg-green-100 p-4 rounded-xl transition-colors">
+                        <div class="flex items-center">
+                            <div class="rounded-full bg-green-100 p-3 mr-4">
+                                <i class="fas fa-dumbbell text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Log Workout</h3>
+                                <p class="text-sm text-gray-600">Track your exercise sessions</p>
+                            </div>
+                            <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
+                        </div>
+                    </a>
+
+                    <a href="../settings/user.php" class="block bg-gray-50 hover:bg-gray-100 p-4 rounded-xl transition-colors">
+                        <div class="flex items-center">
+                            <div class="rounded-full bg-gray-200 p-3 mr-4">
+                                <i class="fas fa-gear text-gray-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Settings</h3>
+                                <p class="text-sm text-gray-600">Update your profile and preferences</p>
+                            </div>
+                            <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="../logout.php" class="block bg-red-50 hover:bg-red-100 p-4 rounded-xl transition-colors">
+                        <div class="flex items-center">
+                            <div class="rounded-full bg-red-100 p-3 mr-4">
+                                <i class="fas fa-sign-out-alt text-red-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Logout</h3>
+                                <p class="text-sm text-gray-600">Sign out from your account</p>
+                            </div>
+                            <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
+                        </div>
+                    </a>
+
                 </div>
             </div>
         </div>
     </div>
     
-    <?php include 'footer.php'; ?>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
-    integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    
+    <footer class="bg-dark text-white mt-16">
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <div class="text-2xl font-bold mb-4">NutriTrack<span class="text-secondary">2025</span></div>
+                    <p class="text-gray-400 mb-4">Your ultimate companion for tracking nutrition and achieving your health goals.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="../index.php" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="../log/workout.php" class="text-gray-400 hover:text-white">Workouts</a></li>
+                        <li><a href="../log/food.php" class="text-gray-400 hover:text-white">Nutrition</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-2"></i> 123 Nutrition Street, Food City</li>
+                        <li class="flex items-start"><i class="fas fa-phone mt-1 mr-2"></i> +1 (555) 123-4567</li>
+                        <li class="flex items-start"><i class="fas fa-envelope mt-1 mr-2"></i> info@nutritrack2025.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 NutriTrack. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        // Product slider implementation
         document.addEventListener('DOMContentLoaded', function() {
-            const slider = document.getElementById('imageSlider');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            const paginationDots = document.getElementById('paginationDots');
+            const ctx = document.getElementById('calorieChart').getContext('2d');
             
-            // Example products - replace with your actual products
-            const products = [
-                { name: "Fitness Mat", image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80", price: "$29.99" },
-                { name: "Resistance Bands", image: "https://images.unsplash.com/photo-1517344884509-a0c97ec11bcc?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80", price: "$19.99" },
-                { name: "Kettlebell Set", image: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80", price: "$89.99" },
-                { name: "Protein Powder", image: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80", price: "$39.99" },
-                { name: "Smart Water Bottle", image: "https://images.unsplash.com/photo-1523362628745-0c100150b504?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80", price: "$49.99" },
-                { name: "Jump Rope", image: "https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80", price: "$12.99" },
-            ];
+            const labels = <?php echo $chart_labels; ?>;
+            const consumedData = <?php echo $chart_consumed_data; ?>;
+            const burnedData = <?php echo $chart_burned_data; ?>;
+            const netData = <?php echo $chart_net_data; ?>;
             
-            // Create product cards
-            products.forEach((product, index) => {
-                const card = document.createElement('div');
-                card.className = 'min-w-[280px] bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105';
-                card.innerHTML = `    
-                <div class="h-44 overflow-hidden">
-                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold mb-2">${product.name}</h3>
-                        <div class="flex justify-between items-center">
-                            <span class="text-primary font-bold">${product.price}</span>
-                            <button class="bg-primary hover:bg-indigo-600 text-white py-2 px-4 rounded-lg text-sm transition-colors">
-                                Add to Cart
-                            </button>
-                        </div>
-                    </div>
-                `;
-                slider.appendChild(card);
-                
-                // Create pagination dot
-                const dot = document.createElement('button');
-                dot.className = 'h-3 w-3 rounded-full bg-gray-300 hover:bg-gray-400 transition-colors';
-                dot.onclick = () => goToSlide(index);
-                paginationDots.appendChild(dot);
-            });
-            
-            // Slider functionality
-            let currentSlide = 0;
-            const slideWidth = 300; // Width of each slide plus gap
-            
-            function updateSlider() {
-                slider.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
-                
-                // Update pagination dots
-                Array.from(paginationDots.children).forEach((dot, index) => {
-                    if (index === currentSlide) {
-                        dot.classList.add('bg-primary');
-                        dot.classList.remove('bg-gray-300');
-                    } else {
-                        dot.classList.add('bg-gray-300');
-                        dot.classList.remove('bg-primary');
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Calories Consumed',
+                            data: consumedData,
+                            backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                            borderColor: 'rgba(79, 70, 229, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Calories Burned',
+                            data: burnedData,
+                            backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            type: 'line',
+                            label: 'Net Balance',
+                            data: netData,
+                            backgroundColor: 'rgba(139, 92, 246, 0.5)',
+                            borderColor: 'rgba(139, 92, 246, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(139, 92, 246, 1)',
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            fill: false,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    family: 'Inter var, sans-serif'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                            titleFont: {
+                                family: 'Inter var, sans-serif',
+                                size: 14
+                            },
+                            bodyFont: {
+                                family: 'Inter var, sans-serif',
+                                size: 13
+                            },
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y + ' kcal';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Inter var, sans-serif'
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(156, 163, 175, 0.1)'
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Inter var, sans-serif'
+                                },
+                                callback: function(value) {
+                                    return value + ' kcal';
+                                }
+                            }
+                        }
                     }
-                });
-            }
-            
-            function goToSlide(index) {
-                currentSlide = Math.min(Math.max(index, 0), products.length - 1);
-                updateSlider();
-            }
-            
-            prevBtn.addEventListener('click', () => {
-                currentSlide = Math.max(currentSlide - 1, 0);
-                updateSlider();
+                }
             });
-            
-            nextBtn.addEventListener('click', () => {
-                currentSlide = Math.min(currentSlide + 1, products.length - 1);
-                updateSlider();
-            });
-            
-            // Initialize slider
-            updateSlider();
-        });
-        
-        // BMI Calculator
-        function calculateBMI() {
-            const height = parseFloat(document.getElementById('height').value);
-            const weight = parseFloat(document.getElementById('weight').value);
-            
-            if (isNaN(height) || isNaN(weight) || height <= 0 || weight <= 0) {
-                alert('Please enter valid height and weight values.');
-                return;
-            }
-            
-            // BMI calculation (imperial formula)
-            const bmi = (weight / (height * height)) * 703;
-            const bmiRounded = Math.round(bmi * 10) / 10;
-            
-            let category;
-            let colorClass;
-            
-            if (bmi < 18.5) {
-                category = 'Underweight';
-                colorClass = 'text-blue-500';
-            } else if (bmi >= 18.5 && bmi < 25) {
-                category = 'Healthy Weight';
-                colorClass = 'text-green-500';
-            } else if (bmi >= 25 && bmi < 30) {
-                category = 'Overweight';
-                colorClass = 'text-yellow-500';
-            } else {
-                category = 'Obese';
-                colorClass = 'text-red-500';
-            }
-            
-            const resultDiv = document.getElementById('result');
-            const bmiValueDiv = document.getElementById('bmi-value');
-            const bmiCategoryDiv = document.getElementById('bmi-category');
-            
-            resultDiv.classList.remove('hidden');
-            bmiValueDiv.textContent = bmiRounded;
-            bmiValueDiv.className = `text-3xl font-bold ${colorClass}`;
-            bmiCategoryDiv.textContent = category;
-            bmiCategoryDiv.className = `mt-2 font-medium ${colorClass}`;
-        }
-        
-        // Marquee animation
-        const marquee = document.querySelector('.marquee-container');
-        gsap.to(marquee, {
-            x: "-50%",
-            repeat: -1,
-            duration: 15,
-            ease: "linear"
         });
     </script>
 </body>

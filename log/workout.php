@@ -57,9 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $sql = "INSERT INTO workouts (id, date, type, duration, calories, intensity, notes, timestamp, email)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    
+    $email = $_SESSION['email'];
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssisisi", $id, $date, $type, $duration, $calories, $intensity, $notes, $timestamp, $_SESSION['email']);
+    $stmt->bind_param("sssisisss", $id, $date, $type, $duration, $calories, $intensity, $notes, $timestamp, $email);
     
     if (!$stmt->execute()) {
         die("Error saving workout: " . $stmt->error);
@@ -71,10 +71,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 if (isset($_GET['delete']) && !empty($_GET['delete'])) {
     $idToDelete = $_GET['delete'];
+    $email = $_SESSION['email'];
     
     $sql = "DELETE FROM workouts WHERE id = ? AND email = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $idToDelete);
+    $stmt->bind_param("ss", $idToDelete, $email);
     
     if (!$stmt->execute()) {
         die("Error deleting workout: " . $stmt->error);
