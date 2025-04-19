@@ -170,8 +170,10 @@ nav a:hover:after {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .hhh{
-    background-color: #003153;
-    background-image: linear-gradient(315deg, #003153 0%, #0abab5 74%);
+    background-color: #50d8d7;
+background-image: linear-gradient(316deg, #50d8d7 0%, #923993 74%);
+
+
 }
 .hover-lift {
     transition: transform 0.3s ease;
@@ -195,7 +197,7 @@ nav a:hover:after {
     <div id="main" class="w-full">
         <!-- Hero Section -->
         <div class="relative h-screen">
-            <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20210115/pngtree-abstract-geometric-background-blue-navy-dark-theme-image_519415.jpg');"></div>
+            <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://i0.wp.com/www.muscleandfitness.com/wp-content/uploads/2017/06/dwayne-johnson-collection-ua-6-11090.jpg?quality=86&strip=all');"></div>
             
             <div class="absolute inset-0 hero-overlay"></div>
 
@@ -211,38 +213,49 @@ nav a:hover:after {
                         The ultimate fitness challenge tracker for achieving your health and wellness goals
                         </p>
                         <div class="flex flex-wrap justify-center gap-4">
-                            <a href="read.php" class="hhh px-6 py-3 bg-accent hover:bg-[green-700] text-amber-300 hover:text-white font-semibold rounded-lg transition-all duration-300 flex items-center gap-2 button-glow hover-scale">
+                            <a href="read.php" class="hhh px-6 py-3 bg-accent hover:bg-gray-100 text-amber-100  font-semibold  hover:font-extrabold hover:text-white rounded-lg transition-all duration-100 flex items-center gap-2 button-glow hover-scale">
                                 Read More 
                                 <div class="h-2 w-2 bg-black rounded-full"></div>
                             </a>
-                            <a href="contact.php" class="hhh px-6 py-3 bg-white hover:bg-gray-100 text-amber-300 hover:text-white font-semibold button-glow rounded-lg hover-scale transition-all duration-300">
+                            <a href="contact.php" class="hhh px-6 py-3 bg-white hover:bg-gray-100 text-amber-100 hover:text-white font-semibold hover:font-extrabold button-glow rounded-lg hover-scale transition-all duration-100">
                                 CONTACT US
                             </a>
                         </div>
                     </div>
                 </div>
+                <style>
+                    .troll {
+                        background: rgb(176,224,230);
+background: linear-gradient(159deg, rgba(176,224,230,1) 0%, rgba(70,130,180,1) 100%);
+                    }
+                    </style>
                 
                 <!-- Marquee Banner -->
-                <div class="absolute bottom-0 w-full bg-gradient-to-r from-accent to-secondary py-4 overflow-hidden whitespace-nowrap shadow-lg">
+                <div class="absolute bottom-0 w-full troll py-4 overflow-hidden whitespace-nowrap shadow-lg">
                     <div class="marquee-container flex gap-8 items-center">
                         <div class="marque flex gap-4 items-center">
-                            <i class="ri-yoga-line text-xl"></i>
-                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">YOGA SERVICE GYM</h1>
-                            <div class="h-2 w-2 rounded-full bg-dark animate-pulse"></div>
-                        </div>
-                        <div class="marque flex gap-4 items-center">
-                            <i class="ri-heart-pulse-line text-xl"></i>
-                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">HEALTH AND GYM</h1>
+                             <i class="ri-heart-line text-xl"></i>
+                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">Take care of your body.</h1>
                             <div class="h-2 w-2 rounded-full bg-dark animate-pulse"></div>
                         </div>
                         <div class="marque flex gap-4 items-center">
                             <i class="ri-run-line text-xl"></i>
-                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">FITNESS AND GYM</h1>
+                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">The only bad workout is the one that didn't happen.</h1>
                             <div class="h-2 w-2 rounded-full bg-dark animate-pulse"></div>
                         </div>
                         <div class="marque flex gap-4 items-center">
-                            <i class="ri-medal-line text-xl"></i>
-                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">PURE GYM SPACE</h1>
+                            <i class="ri-lightbulb-line text-xl"></i>
+                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">You have to think about it before you can do it.</h1>
+                            <div class="h-2 w-2 rounded-full bg-dark animate-pulse"></div>
+                        </div>
+                        <div class="marque flex gap-4 items-center">
+                            <i class="ri-run-line text-xl"></i>
+                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">You did not wake up today to be mediocre.</h1>
+                            <div class="h-2 w-2 rounded-full bg-dark animate-pulse"></div>
+                        </div>
+                        <div class="marque flex gap-4 items-center">
+                            <i class="ri-sun-line text-xl"></i>
+                            <h1 class="font-bold text-dark tracking-wider hover:text-white transition-colors">You have to think about it before you can do it.</h1>
                             <div class="h-2 w-2 rounded-full bg-dark animate-pulse"></div>
                         </div>
                     </div>
@@ -269,39 +282,95 @@ nav a:hover:after {
                         </p>
                         
                         <form action="" class="mt-6">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                                <div class="border border-gray-200 px-4 py-3 bg-white rounded-lg shadow-sm">
-                                    <label for="height" class="block text-xs text-gray-500 mb-1">Height (Inches)</label>
-                                    <input type="number" id="height" placeholder="Enter height" class="w-full bg-transparent outline-none text-gray-800">
-                                </div>
-                                <div class="border border-gray-200 px-4 py-3 bg-white rounded-lg shadow-sm">
-                                    <label for="weight" class="block text-xs text-gray-500 mb-1">Weight (lbs)</label>
-                                    <input type="number" id="weight" placeholder="Enter weight" class="w-full bg-transparent outline-none text-gray-800">
-                                </div>
-                            </div>
-                
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div class="border border-gray-200 px-4 py-3 bg-white rounded-lg shadow-sm">
-                                    <label for="age" class="block text-xs text-gray-500 mb-1">Age</label>
-                                    <input type="number" id="age" placeholder="Enter age" required class="w-full bg-transparent outline-none text-gray-800">
-                                </div>
-                                <div class="border border-gray-200 px-4 py-3 bg-white rounded-lg shadow-sm">
-                                    <label for="gender" class="block text-xs text-gray-500 mb-1">Gender</label>
-                                    <select id="gender" class="w-full bg-transparent outline-none text-gray-800">
-                                        <option value="">Select gender</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                </div>
-                            </div>
-                
-                            <button type="button" onclick="calculateBMI()" 
-                                class="mt-8 flex gap-2 px-6 py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors">
-                                <span>Calculate BMI</span>
-                                <i class="fas fa-calculator"></i>
-                            </button>
-                        </form>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="border border-gray-200 px-4 py-3 bg-white rounded-lg shadow-sm">
+            <label for="height" class="block text-xs text-gray-500 mb-1">Height (Inches)</label>
+            <input type="number" id="height" placeholder="Enter height" class="w-full bg-transparent outline-none text-gray-800">
+        </div>
+        <div class="border border-gray-200 px-4 py-3 bg-white rounded-lg shadow-sm">
+            <label for="weight" class="block text-xs text-gray-500 mb-1">Weight (lbs)</label>
+            <input type="number" id="weight" placeholder="Enter weight" class="w-full bg-transparent outline-none text-gray-800">
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="border border-gray-200 px-4 py-3 bg-white rounded-lg shadow-sm">
+            <label for="age" class="block text-xs text-gray-500 mb-1">Age</label>
+            <input type="number" id="age" placeholder="Enter age" required class="w-full bg-transparent outline-none text-gray-800">
+        </div>
+        <div class="border border-gray-200 px-4 py-3 bg-white rounded-lg shadow-sm">
+            <label for="gender" class="block text-xs text-gray-500 mb-1">Gender</label>
+            <select id="gender" class="w-full bg-transparent outline-none text-gray-800">
+                <option value="">Select gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+    </div>
+
+    <button type="button" onclick="calculateBMI()" 
+        class="mt-8 flex gap-2 px-6 py-3 bg-primary hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors">
+        <span>Calculate BMI</span>
+        <i class="fas fa-calculator"></i>
+    </button>
+</form>
+
+<!-- BMI Result Output -->
+<div id="result" class="hidden mt-6">
+    <div id="bmi-value" class="text-lg font-bold"></div>
+    <div id="bmi-category" class="mt-2 font-medium"></div>
+</div>
+
+<!-- ✅ Correct Script Tag -->
+<script>
+    function calculateBMI() {
+        const height = parseFloat(document.getElementById('height').value);
+        const weight = parseFloat(document.getElementById('weight').value);
+        const age = parseInt(document.getElementById('age').value);
+
+        if (isNaN(height) || isNaN(weight) || isNaN(age) || height <= 0 || weight <= 0 || age <= 0) {
+            alert('Please enter valid height, weight, and age values.');
+            return;
+        }
+
+        const bmi = (weight / (height * height)) * 703;
+        const bmiRounded = Math.round(bmi * 10) / 10;
+
+        const resultDiv = document.getElementById('result');
+        const bmiValueDiv = document.getElementById('bmi-value');
+        const bmiCategoryDiv = document.getElementById('bmi-category');
+
+        let category;
+        let colorClass;
+
+        if (age >= 18) {
+            if (bmi < 18.5) {
+                category = 'Underweight';
+                colorClass = 'text-blue-500';
+            } else if (bmi >= 18.5 && bmi < 25) {
+                category = 'Healthy Weight';
+                colorClass = 'text-green-500';
+            } else if (bmi >= 25 && bmi < 30) {
+                category = 'Overweight';
+                colorClass = 'text-yellow-500';
+            } else {
+                category = 'Obese';
+                colorClass = 'text-red-500';
+            }
+        } else {
+            category = 'BMI-for-age required. Consult growth charts or a doctor.';
+            colorClass = 'text-purple-500';
+        }
+
+        resultDiv.classList.remove('hidden');
+        bmiValueDiv.textContent = `BMI: ${bmiRounded}`;
+        bmiValueDiv.className = `text-3xl font-bold ${colorClass}`;
+        bmiCategoryDiv.textContent = category;
+        bmiCategoryDiv.className = `mt-2 font-medium ${colorClass}`;
+    }
+</script>
+
                         
                         <div id="result" class="mt-6 p-4 bg-white rounded-lg border border-gray-200 hidden">
                             <h4 class="font-bold text-lg mb-2">Your Result:</h4>
@@ -360,13 +429,17 @@ nav a:hover:after {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                     <div>
                         <h2 class="text-4xl font-bold mb-4">Ready to Start Your Fitness Journey?</h2>
-                        <p class="text-xl opacity-90 mb-8">Join our community today and transform your body with expert guidance and support.</p>
+                        <p class="text-xl opacity-90 mb-8">Join our community today and transform your body with ultimate tracking and anlysis of your fitness.</p>
+                        <p class="text-xl opacity-90 mb-4">* If not registerd yet</p>
+
                         <div class="flex flex-wrap gap-4">
                             <a href="register.php" class="px-6 py-3 bg-accent hover:bg-[#a5c104] text-black font-semibold rounded-lg transition-all duration-300">
                                 Join Now
                             </a>
+                         
                         
                         </div>
+
                     </div>
                     <div class="hidden md:flex justify-end">
                         <div class="w-72 h-72 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
@@ -391,62 +464,7 @@ nav a:hover:after {
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
             const paginationDots = document.getElementById('paginationDots');
-            
-            // Example products - replace with your actual products
-            const products = [
-                { name: "Fitness Mat", image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80", price: "$29.99" },
-                { name: "Resistance Bands", image: "https://images.unsplash.com/photo-1517344884509-a0c97ec11bcc?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80", price: "$19.99" },
-                { name: "Kettlebell Set", image: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80", price: "$89.99" },
-                { name: "Protein Powder", image: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80", price: "$39.99" },
-                { name: "Smart Water Bottle", image: "https://images.unsplash.com/photo-1523362628745-0c100150b504?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80", price: "$49.99" },
-                { name: "Jump Rope", image: "https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80", price: "$12.99" },
-            ];
-            
-            // Create product cards
-            products.forEach((product, index) => {
-                const card = document.createElement('div');
-                card.className = 'min-w-[280px] bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105';
-                card.innerHTML = `    
-                <div class="h-44 overflow-hidden">
-                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold mb-2">${product.name}</h3>
-                        <div class="flex justify-between items-center">
-                            <span class="text-primary font-bold">${product.price}</span>
-                            <button class="bg-primary hover:bg-indigo-600 text-white py-2 px-4 rounded-lg text-sm transition-colors">
-                                Add to Cart
-                            </button>
-                        </div>
-                    </div>
-                `;
-                slider.appendChild(card);
-                
-                // Create pagination dot
-                const dot = document.createElement('button');
-                dot.className = 'h-3 w-3 rounded-full bg-gray-300 hover:bg-gray-400 transition-colors';
-                dot.onclick = () => goToSlide(index);
-                paginationDots.appendChild(dot);
-            });
-            
-            // Slider functionality
-            let currentSlide = 0;
-            const slideWidth = 300; // Width of each slide plus gap
-            
-            function updateSlider() {
-                slider.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
-                
-                // Update pagination dots
-                Array.from(paginationDots.children).forEach((dot, index) => {
-                    if (index === currentSlide) {
-                        dot.classList.add('bg-primary');
-                        dot.classList.remove('bg-gray-300');
-                    } else {
-                        dot.classList.add('bg-gray-300');
-                        dot.classList.remove('bg-primary');
-                    }
-                });
-            }
+         
             
             function goToSlide(index) {
                 currentSlide = Math.min(Math.max(index, 0), products.length - 1);
@@ -467,47 +485,7 @@ nav a:hover:after {
             updateSlider();
         });
         
-        // BMI Calculator
-        function calculateBMI() {
-            const height = parseFloat(document.getElementById('height').value);
-            const weight = parseFloat(document.getElementById('weight').value);
-            
-            if (isNaN(height) || isNaN(weight) || height <= 0 || weight <= 0) {
-                alert('Please enter valid height and weight values.');
-                return;
-            }
-            
-            // BMI calculation (imperial formula)
-            const bmi = (weight / (height * height)) * 703;
-            const bmiRounded = Math.round(bmi * 10) / 10;
-            
-            let category;
-            let colorClass;
-            
-            if (bmi < 18.5) {
-                category = 'Underweight';
-                colorClass = 'text-blue-500';
-            } else if (bmi >= 18.5 && bmi < 25) {
-                category = 'Healthy Weight';
-                colorClass = 'text-green-500';
-            } else if (bmi >= 25 && bmi < 30) {
-                category = 'Overweight';
-                colorClass = 'text-yellow-500';
-            } else {
-                category = 'Obese';
-                colorClass = 'text-red-500';
-            }
-            
-            const resultDiv = document.getElementById('result');
-            const bmiValueDiv = document.getElementById('bmi-value');
-            const bmiCategoryDiv = document.getElementById('bmi-category');
-            
-            resultDiv.classList.remove('hidden');
-            bmiValueDiv.textContent = bmiRounded;
-            bmiValueDiv.className = `text-3xl font-bold ${colorClass}`;
-            bmiCategoryDiv.textContent = category;
-            bmiCategoryDiv.className = `mt-2 font-medium ${colorClass}`;
-        }
+     
         
         // Marquee animation
         const marquee = document.querySelector('.marquee-container');
