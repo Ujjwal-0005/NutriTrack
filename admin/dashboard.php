@@ -135,6 +135,7 @@ $conn->close();
                     <a href="users.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Users</a>
                     <a href="foods.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Food Entries</a>
                     <a href="workouts.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Workout Entries</a>
+                    <a href="backup.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Backup</a>
                     <a href="settings.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Settings</a>
                 </div>
             </div>
@@ -190,9 +191,6 @@ $conn->close();
                 <div>
                     <h3 class="text-gray-500 text-sm font-medium">Total Users</h3>
                     <p class="text-2xl font-bold text-gray-800"><?php echo $total_users; ?></p>
-                    <span class="text-green-500 text-xs font-medium flex items-center mt-1">
-                        <i class="fas fa-arrow-up mr-1"></i> 12% increase
-                    </span>
                 </div>
             </div>
 
@@ -203,9 +201,6 @@ $conn->close();
                 <div>
                     <h3 class="text-gray-500 text-sm font-medium">Food Entries</h3>
                     <p class="text-2xl font-bold text-gray-800"><?php echo $total_foods; ?></p>
-                    <span class="text-green-500 text-xs font-medium flex items-center mt-1">
-                        <i class="fas fa-arrow-up mr-1"></i> 8% increase
-                    </span>
                 </div>
             </div>
 
@@ -216,9 +211,6 @@ $conn->close();
                 <div>
                     <h3 class="text-gray-500 text-sm font-medium">Workout Entries</h3>
                     <p class="text-2xl font-bold text-gray-800"><?php echo $total_workouts; ?></p>
-                    <span class="text-green-500 text-xs font-medium flex items-center mt-1">
-                        <i class="fas fa-arrow-up mr-1"></i> 15% increase
-                    </span>
                 </div>
             </div>
 
@@ -229,9 +221,6 @@ $conn->close();
                 <div>
                     <h3 class="text-gray-500 text-sm font-medium">System Status</h3>
                     <p class="text-2xl font-bold text-gray-800">Healthy</p>
-                    <span class="text-green-500 text-xs font-medium flex items-center mt-1">
-                        <i class="fas fa-check-circle mr-1"></i> All systems normal
-                    </span>
                 </div>
             </div>
         </div>
