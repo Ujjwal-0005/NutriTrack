@@ -197,7 +197,7 @@ background-image: linear-gradient(316deg, #50d8d7 0%, #923993 74%);
     <div id="main" class="w-full">
         <!-- Hero Section -->
         <div class="relative h-screen">
-            <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://i0.wp.com/www.muscleandfitness.com/wp-content/uploads/2017/06/dwayne-johnson-collection-ua-6-11090.jpg?quality=86&strip=all');"></div>
+            <div class="absolute inset-0 bg-cover  bg-no-repeat" style="background-image: url('https://i0.wp.com/www.muscleandfitness.com/wp-content/uploads/2017/06/dwayne-johnson-collection-ua-6-11090.jpg?quality=86&strip=all');"></div>
             
             <div class="absolute inset-0 hero-overlay"></div>
 
