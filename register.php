@@ -19,7 +19,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         lastname VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        admin TINYINT(1) DEFAULT 0,
+        last_login DATETIME DEFAULT NULL
     )";
 
     if (!$conn->query($checkTableSql)) {
