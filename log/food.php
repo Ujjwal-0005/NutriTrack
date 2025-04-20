@@ -103,9 +103,15 @@ if ($result) {
             }
         }
     </script>
+    <style>
+        .das{
+            background: rgb(0,51,102);
+background: linear-gradient(159deg, rgba(0,51,102,1) 0%, rgba(15,82,186,1) 100%);
+        }
+        </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
-    <div class="bg-gradient-to-r from-primary to-indigo-800 text-white">
+    <div class="das text-white">
         <?php include '../nav_dashboard.php'; ?>
         
         <div class="container mx-auto px-6 py-16">
@@ -233,12 +239,7 @@ if ($result) {
                                             <td class="px-4 py-4 text-gray-700"><?= htmlspecialchars($food['calories']) ?> kcal</td>
                                             <td class="px-4 py-4">
                                                 <div class="flex space-x-2">
-                                                    <button class="text-gray-500 hover:text-primary" title="View details">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                    <button class="text-gray-500 hover:text-secondary" title="Edit food">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
+                                                   
                                                     <a href="?delete=<?= $food['id'] ?>" class="text-gray-500 hover:text-red-500" 
                                                        title="Delete food" 
                                                        onclick="return confirm('Are you sure you want to delete this food entry?')">
@@ -272,40 +273,7 @@ if ($result) {
     </div>
     
     <footer class="bg-dark text-white mt-16">
-        <div class="container mx-auto px-6 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <div class="text-2xl font-bold mb-4">NutriTrack<span class="text-secondary">2025</span></div>
-                    <p class="text-gray-400 mb-4">Your ultimate companion for tracking nutrition and achieving your health goals.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">About</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Features</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-2"></i> 123 Nutrition Street, Food City</li>
-                        <li class="flex items-start"><i class="fas fa-phone mt-1 mr-2"></i> +1 (555) 123-4567</li>
-                        <li class="flex items-start"><i class="fas fa-envelope mt-1 mr-2"></i> info@nutritrack2025.com</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2025 NutriTrack. All rights reserved.</p>
-            </div>
-        </div>
+        <?php include '../footer.php'; ?>
     </footer>
 </body>
 </html>
