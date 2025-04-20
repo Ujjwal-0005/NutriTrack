@@ -13,11 +13,13 @@ if ($result->num_rows == 0) {
     $createTableQuery = "
         CREATE TABLE users (
             id INT AUTO_INCREMENT PRIMARY KEY,
+            firstname VARCHAR(255) NOT NULL,
+            lastname VARCHAR(255) NOT NULL,
             email VARCHAR(255) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
-            firstname VARCHAR(100) NOT NULL,
-            lastname VARCHAR(100) NOT NULL,
-            admin TINYINT(1) DEFAULT 0
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            admin TINYINT(1) DEFAULT 0,
+            last_login DATETIME DEFAULT NULL
         )
     ";
     if (!$conn->query($createTableQuery)) {
