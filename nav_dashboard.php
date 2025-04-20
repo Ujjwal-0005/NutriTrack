@@ -13,6 +13,7 @@
             <a href="../index.php" class="hover:text-secondary transition">Home</a>
             <?php if (isset($_SESSION['firstname'])): ?>
                 <a href="../dashboard/user.php" class="hover:text-secondary transition">Dashboard</a>
+                <a href="challenges.php" class="py-2 px-3 rounded-md">Challenges</a>
                 <a href="../settings/user.php" class="hover:text-secondary transition">Profile</a>
                 <?php if ($_SESSION['admin'] == 1): ?>
                     <a href="../admin/dashboard.php" class="hover:text-secondary transition">Admin Dashboard</a>

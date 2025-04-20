@@ -135,8 +135,7 @@ $conn->close();
                     <a href="users.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Users</a>
                     <a href="foods.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Food Entries</a>
                     <a href="workouts.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Workout Entries</a>
-                    <a href="backup.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Backup</a>
-                    <a href="settings.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Settings</a>
+                    <a href="challenges.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Challenges</a>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -171,14 +170,6 @@ $conn->close();
             <div>
                 <h1 class="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
                 <p class="text-gray-600 mt-1">Welcome back, <?php echo $_SESSION['firstname']; ?>. Here's what's happening today.</p>
-            </div>
-            <div class="flex space-x-3">
-                <button class="bg-admin hover:bg-pink-800 text-white px-4 py-2 rounded-md flex items-center text-sm">
-                    <i class="fas fa-download mr-2"></i> Export Data
-                </button>
-                <button class="bg-dark hover:bg-gray-800 text-white px-4 py-2 rounded-md flex items-center text-sm">
-                    <i class="fas fa-cog mr-2"></i> Settings
-                </button>
             </div>
         </div>
 
@@ -315,57 +306,11 @@ $conn->close();
                                 <h3 class="text-sm font-medium text-gray-900"><?php echo htmlspecialchars($user['firstname'] . ' ' . $user['lastname']); ?></h3>
                                 <p class="text-xs text-gray-500"><?php echo htmlspecialchars($user['email']); ?></p>
                             </div>
-                            <div class="flex space-x-2">
-                                <button class="text-gray-400 hover:text-admin">
-                                    <i class="fas fa-envelope"></i>
-                                </button>
-                                <button class="text-gray-400 hover:text-admin">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
                         </div>
                         <?php endwhile; ?>
                     </div>
                 </div>
 
-                <!-- System Information -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-6">System Information</h2>
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span class="text-sm font-medium text-gray-600">Server</span>
-                                <span class="text-sm font-medium text-gray-800"><?php echo htmlspecialchars($server_info); ?></span>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span class="text-sm font-medium text-gray-600">PHP Version</span>
-                                <span class="text-sm font-medium text-gray-800"><?php echo htmlspecialchars($php_version); ?></span>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span class="text-sm font-medium text-gray-600">MySQL Version</span>
-                                <span class="text-sm font-medium text-gray-800"><?php echo htmlspecialchars($mysql_version); ?></span>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span class="text-sm font-medium text-gray-600">Max Upload</span>
-                                <span class="text-sm font-medium text-gray-800"><?php echo htmlspecialchars($max_upload); ?></span>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span class="text-sm font-medium text-gray-600">Memory Limit</span>
-                                <span class="text-sm font-medium text-gray-800"><?php echo htmlspecialchars($memory_limit); ?></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <h2 class="text-xl font-bold text-gray-800 mb-6">Quick Actions</h2>
                     <div class="space-y-3">
@@ -375,11 +320,12 @@ $conn->close();
                             </div>
                             <span class="text-sm font-medium text-gray-800">Manage Users</span>
                         </a>
-                        <a href="backup.php" class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-md transition">
+                        <a href="#" class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-md transition" id="under-maintenance">
                             <div class="rounded-full bg-green-100 h-8 w-8 flex items-center justify-center mr-3">
                                 <i class="fas fa-database text-green-600"></i>
                             </div>
                             <span class="text-sm font-medium text-gray-800">Backup Database</span>
+                            <span class="ml-2 text-xs text-red-500">(Under Maintenance)</span>
                         </a>
                         <a href="logs.php" class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-md transition">
                             <div class="rounded-full bg-yellow-100 h-8 w-8 flex items-center justify-center mr-3">
@@ -387,11 +333,12 @@ $conn->close();
                             </div>
                             <span class="text-sm font-medium text-gray-800">View System Logs</span>
                         </a>
-                        <a href="settings.php" class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-md transition">
+                        <a href="#" class="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-md transition" id="under-maintenance">
                             <div class="rounded-full bg-purple-100 h-8 w-8 flex items-center justify-center mr-3">
                                 <i class="fas fa-cog text-purple-600"></i>
                             </div>
                             <span class="text-sm font-medium text-gray-800">System Settings</span>
+                            <span class="ml-2 text-xs text-red-500">(Under Maintenance)</span>
                         </a>
                     </div>
                 </div>
@@ -554,6 +501,17 @@ $conn->close();
                     intersect: false
                 }
             }
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const underMaintenanceLinks = document.querySelectorAll('#under-maintenance');
+        underMaintenanceLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                alert('This feature is currently under maintenance. Please check back later.');
+            });
         });
     });
 </script>

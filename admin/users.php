@@ -2,63 +2,77 @@
 session_start();
 include '../db.php';
 
-// Check for admin privileges
 if (!isset($_SESSION['email']) || !isset($_SESSION['admin']) || $_SESSION['admin'] != 1) {
     header("Location: ../login.php");
     exit();
 }
 
-// Check database connection
 if (!$conn) {
     die("Database connection failed: " . mysqli_connect_error());
 }
 
-// Handle user actions
 if (isset($_GET['action']) && isset($_GET['id'])) {
     $action = $_GET['action'];
     $id = intval($_GET['id']);
     
     if ($action === 'delete') {
-        // Delete user
         $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $message = "User deleted successfully";
     } else if ($action === 'toggleAdmin') {
-        // Toggle admin status
-        $stmt = $conn->prepare("UPDATE users SET admin = 1 - admin WHERE id = ?");
+        // Get the user's email first
+        $stmt = $conn->prepare("SELECT email FROM users WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
-        $message = "Admin status updated successfully";
+        $stmt->bind_result($email);
+        $stmt->fetch();
+        $stmt->close();
+        
+        if ($email === $_SESSION['email']) {
+            $message = "You cannot change your own admin status.";
+        } else {
+            $stmt = $conn->prepare("SELECT admin FROM users WHERE id = ?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $stmt->bind_result($adminStatus);
+            $stmt->fetch();
+            $stmt->close();
+
+            $stmt = $conn->prepare("UPDATE users SET admin = 1 - admin WHERE id = ?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            
+            if ($adminStatus == 1) {
+                $message = "Admin status removed successfully";
+            } else {
+                $message = "Admin status granted successfully";
+            }
+        }
     }
 }
 
-// Get search query if any
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $searchCondition = '';
 if (!empty($search)) {
     $searchCondition = " WHERE firstname LIKE '%$search%' OR lastname LIKE '%$search%' OR email LIKE '%$search%'";
 }
 
-// Pagination
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $recordsPerPage = 10;
 $offset = ($page - 1) * $recordsPerPage;
 
-// Count total users
 $countQuery = "SELECT COUNT(*) as total FROM users" . $searchCondition;
 $countResult = $conn->query($countQuery);
 $totalRecords = $countResult->fetch_assoc()['total'];
 $totalPages = ceil($totalRecords / $recordsPerPage);
 
-// Get users with pagination
 $sql = "SELECT * FROM users" . $searchCondition . " ORDER BY id DESC LIMIT ?, ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ii", $offset, $recordsPerPage);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Get total counts for stats
 $total_users = $totalRecords;
 
 $sql_active_users = "SELECT COUNT(*) as count FROM users WHERE last_login >= DATE_SUB(NOW(), INTERVAL 30 DAY)";
@@ -107,11 +121,11 @@ $conn->close();
                     <span class="text-admin">Admin</span>Panel
                 </span>
                 <div class="hidden md:flex space-x-6 font-medium text-sm">
-                    <a href="dashboard.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Dashboard</a>
-                    <a href="users.php" class="py-2 px-3 bg-admin rounded-md text-white">Users</a>
+                    <a href="dashboard.php" class="py-2 px-3 bg-admin rounded-md text-white">Dashboard</a>
+                    <a href="users.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Users</a>
                     <a href="foods.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Food Entries</a>
                     <a href="workouts.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Workout Entries</a>
-                    <a href="settings.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Settings</a>
+                    <a href="challenges.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Challenges</a>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -148,9 +162,11 @@ $conn->close();
                 <p class="text-gray-600 mt-1">View and manage all user accounts</p>
             </div>
             <div>
-                <button class="bg-admin hover:bg-pink-800 text-white px-4 py-2 rounded-md flex items-center text-sm">
-                    <i class="fas fa-user-plus mr-2"></i> Add New User
-                </button>
+                <a href="add_user.php">
+                    <button class="bg-admin hover:bg-pink-800 text-white px-4 py-2 rounded-md flex items-center text-sm">
+                        <i class="fas fa-user-plus mr-2"></i> Add New User
+                    </button>
+                </a>
             </div>
         </div>
 

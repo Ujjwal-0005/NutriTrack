@@ -297,14 +297,14 @@ $chart_net_data = json_encode($net_data);
                         </div>
                     </a>
                     
-                    <a href="../logout.php" class="block bg-red-50 hover:bg-red-100 p-4 rounded-xl transition-colors">
+                    <a href="challenges.php" class="block bg-red-50 hover:bg-red-100 p-4 rounded-xl transition-colors">
                         <div class="flex items-center">
                             <div class="rounded-full bg-red-100 p-3 mr-4">
                                 <i class="fas fa-sign-out-alt text-red-600"></i>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-gray-800">Logout</h3>
-                                <p class="text-sm text-gray-600">Sign out from your account</p>
+                                <h3 class="font-semibold text-gray-800">Challenges</h3>
+                                <p class="text-sm text-gray-600">Join and track your fitness challenges</p>
                             </div>
                             <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
                         </div>
