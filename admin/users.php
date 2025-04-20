@@ -114,18 +114,24 @@ $conn->close();
 </head>
 <body class="bg-gray-100 min-h-screen">
     <!-- Top Navigation -->
-    <nav class="bg-dark text-white shadow-md">
+    <style>
+        .das{
+            background-color: #b92e34;
+background-image: linear-gradient(326deg, #b92e34 0%, #3d0c02 74%);
+        }
+    </style>
+    <nav class="das text-white shadow-md">
         <div class="container mx-auto px-6 py-3 flex justify-between items-center">
             <div class="flex items-center">
                 <span class="text-2xl font-bold mr-4">
-                    <span class="text-admin">Admin</span>Panel
+                    <span class="text-orange-500">Admin</span>Panel
                 </span>
                 <div class="hidden md:flex space-x-6 font-medium text-sm">
-                    <a href="dashboard.php" class="py-2 px-3 bg-admin rounded-md text-white">Dashboard</a>
-                    <a href="users.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Users</a>
-                    <a href="foods.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Food Entries</a>
-                    <a href="workouts.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Workout Entries</a>
-                    <a href="challenges.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Challenges</a>
+                    <a href="dashboard.php" class="py-2 px-3 hover:bg-orange-100 font-semibold hover:text-orange-900 rounded-md text-white">Dashboard</a>
+                    <a href="users.php" class="py-2 px-3 hover:bg-orange-100 font-semibold hover:text-orange-900 rounded-md bg-orange-700">Users</a>
+                    <a href="foods.php" class="py-2 px-3 hover:bg-orange-100 font-semibold hover:text-orange-900 rounded-md">Food Entries</a>
+                    <a href="workouts.php" class="py-2 px-3 hover:bg-orange-100 font-semibold hover:text-orange-900 rounded-md">Workout Entries</a>
+                    <a href="challenges.php" class="py-2 px-3 hover:bg-orange-100 font-semibold hover:text-orange-900 rounded-md">Challenges</a>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -133,7 +139,7 @@ $conn->close();
                     <i class="fas fa-home mr-1"></i> User Dashboard
                 </a>
                 <div class="relative group">
-                    <button class="flex items-center space-x-2">
+                    <button class="flex py-2 px-3 items-center space-x-2">
                         <div class="w-8 h-8 rounded-full bg-admin flex items-center justify-center">
                             <i class="fas fa-user-shield"></i>
                         </div>
@@ -154,7 +160,14 @@ $conn->close();
     </nav>
 
     <!-- Main Content -->
-    <div class="container mx-auto px-6 py-8">
+    <style>
+        .new{
+            background-color: #f2f0ef;
+background-image: linear-gradient(315deg, #f2f0ef 0%, #fbceb1 74%);
+
+        }
+    </style>
+    <div class="container new mx-auto px-6 py-8">
         <!-- Page Header -->
         <div class="flex justify-between items-center mb-8">
             <div>
@@ -188,15 +201,7 @@ $conn->close();
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow-md p-6 flex items-center">
-                <div class="rounded-full bg-green-100 p-3 mr-4">
-                    <i class="fas fa-user-check text-green-600 text-xl"></i>
-                </div>
-                <div>
-                    <h3 class="text-gray-500 text-sm font-medium">Active Users (30 days)</h3>
-                    <p class="text-2xl font-bold text-gray-800"><?php echo $active_users; ?></p>
-                </div>
-            </div>
+           
 
             <div class="bg-white rounded-lg shadow-md p-6 flex items-center">
                 <div class="rounded-full bg-admin bg-opacity-20 p-3 mr-4">
@@ -299,9 +304,7 @@ $conn->close();
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-2">
-                                    <a href="edit_user.php?id=<?php echo $user['id']; ?>" class="text-indigo-600 hover:text-indigo-900">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
+                                    
                                     <a href="?action=toggleAdmin&id=<?php echo $user['id']; ?>" class="text-yellow-600 hover:text-yellow-900">
                                         <i class="fas fa-user-shield"></i>
                                     </a>
@@ -364,24 +367,14 @@ $conn->close();
     </div>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-6 mt-16">
+    <footer class="bg-dark text-white py-6">
         <div class="container mx-auto px-6">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-4 md:mb-0">
-                    <div class="text-xl font-bold">NutriTrack<span class="text-admin">2025</span> Admin</div>
+                    <div class="text-xl font-bold">NutriTrack Admin</div>
                     <div class="text-gray-400 text-sm">Version 1.0.0</div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <a href="#" class="text-gray-400 hover:text-white transition">
-                        <i class="fas fa-question-circle"></i> Help
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-white transition">
-                        <i class="fas fa-shield-alt"></i> Privacy
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-white transition">
-                        <i class="fas fa-file-contract"></i> Terms
-                    </a>
-                </div>
+                
             </div>
             <div class="mt-6 border-t border-gray-700 pt-4 text-sm text-gray-400 text-center">
                 <p>&copy; 2025 NutriTrack Admin Panel. All rights reserved.</p>
