@@ -14,7 +14,8 @@
     }
 
     header {
-      background-color: #3cb371;
+      background: rgb(0,51,102);
+background: linear-gradient(159deg, rgba(0,51,102,1) 0%, rgba(15,82,186,1) 100%);
       color: white;
       padding: 20px 40px;
       text-align: center;
@@ -34,7 +35,8 @@
     }
 
     .feature-section h2 {
-      color: #3cb371;
+      color:rgb(5, 78, 152);
+
       margin-bottom: 10px;
     }
 
@@ -48,7 +50,7 @@
 
     .contact-form h2 {
       margin-bottom: 20px;
-      color: #3cb371;
+      color:rgb(5, 78, 152);
     }
 
     .form-group {
@@ -68,8 +70,9 @@
       border-radius: 6px;
     }
 
-    button {
-      background-color: #3cb371;
+     button {
+      background:rgb(27, 105, 182);
+
       color: white;
       padding: 10px 20px;
       border: none;
@@ -78,7 +81,8 @@
     }
 
     button:hover {
-      background-color: #34a162;
+      background:rgb(5, 78, 152);
+
     }
 
     footer {
@@ -127,9 +131,7 @@
     </form>
   </div>
 
-  <footer>
-    &copy; 2025 NutriTrack. All rights reserved.
-  </footer>
+
 
 </body>
 </html>
