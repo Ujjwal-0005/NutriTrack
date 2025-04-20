@@ -28,7 +28,7 @@ NutriTrack 2025 is your ultimate fitness and nutrition companion. This web appli
 
 1. Clone the repository to your local machine:
    ```bash
-   git clone https://github.com/your-repo/nutritrack2025.git
+   git clone https://github.com/shashankpandey04/NutriTrack.git
    ```
 2. Move to the project directory:
    ```bash
@@ -80,4 +80,4 @@ Contributions are welcome! Please fork the repository and submit a pull request 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
 
 ## Contact
-For any inquiries or support, please contact us at [info@fittrack2025.com](mailto:info@fittrack2025.com).
+For any inquiries or support, please contact us at [contact.shashankpandey04@gmail.com](mailto:contact.shashankpandey04@gmail.com).
