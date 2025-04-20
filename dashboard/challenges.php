@@ -169,29 +169,36 @@ $history_result = $history_query->get_result();
             }
         }
     </script>
+    <style>
+    .das{
+            background: rgb(0,51,102);
+background: linear-gradient(159deg, rgba(0,51,102,1) 0%, rgba(15,82,186,1) 100%);
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <!-- Top Navigation -->
-    <nav class="bg-primary text-white shadow-md">
+    <nav class="das text-white shadow-md">
         <div class="container mx-auto px-6 py-3 flex justify-between items-center">
             <div class="flex items-center">
-                <span class="text-2xl font-bold mr-4">NutriTrack<span class="text-secondary">2025</span></span>
+                <span class="text-2xl font-bold mr-6">NutriTrack</span>
                 <div class="hidden md:flex space-x-6 font-medium text-sm">
-                    <a href="../dashboard/user.php" class="py-2 px-3 hover:bg-indigo-600 rounded-md">Dashboard</a>
-                    <a href="../meals/tracker.php" class="py-2 px-3 hover:bg-indigo-600 rounded-md">Meal Tracker</a>
-                    <a href="../workouts/exercises.php" class="py-2 px-3 hover:bg-indigo-600 rounded-md">Workouts</a>
-                    <a href="../progress/stats.php" class="py-2 px-3 hover:bg-indigo-600 rounded-md">Progress</a>
-                    <a href="challenges.php" class="py-2 px-3 bg-indigo-700 rounded-md">Challenges</a>
+                    <a href="user.php" class="py-2 px-3 hover:bg-white hover:text-blue-900 rounded-md">Dashboard</a>
+                    <a href="../log/food.php" class="py-2 px-3 hover:bg-white hover:text-blue-900 rounded-md">Meal Tracker</a>
+                    <a href="../log/workout.php" class="py-2 px-3 hover:bg-white hover:text-blue-900 rounded-md">Workouts</a>
+                    <a href="user.php" class="py-2 px-3 hover:bg-white hover:text-blue-900 rounded-md">Progress</a>
+                    
                 </div>
             </div>
             <div class="flex items-center space-x-4">
                 <div class="relative group">
-                    <button class="flex items-center space-x-2">
+                    <button class="flex items-center px-3 py-2  space-x-2">
                         <div class="w-8 h-8 rounded-full bg-indigo-700 flex items-center justify-center">
                             <i class="fas fa-user"></i>
                         </div>
                         <span class="hidden md:inline-block"><?php echo $_SESSION['firstname']; ?></span>
                         <i class="fas fa-chevron-down text-xs"></i>
+
                     </button>
                     <div class="absolute right-0 w-48 bg-white rounded-md shadow-lg py-1 mt-2 z-10 hidden group-hover:block">
                         <a href="../settings/user.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -201,13 +208,21 @@ $history_result = $history_query->get_result();
                             <i class="fas fa-sign-out-alt mr-2"></i> Logout
                         </a>
                     </div>
+                    
                 </div>
             </div>
         </div>
     </nav>
+        <style>
+            .neww{
+                background-color: #0073cf;
+background-image: linear-gradient(315deg, #0073cf 0%,rgb(236, 224, 218) 74%);
 
+
+            }
+            </style>
     <!-- Main Content -->
-    <div class="container mx-auto px-6 py-8">
+    <div class="container neww mx-auto px-6 py-8">
         <!-- Page Header with User Points -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
             <div>
@@ -249,6 +264,7 @@ $history_result = $history_query->get_result();
             <div>
                 <p class="font-medium"><?php echo $error_message; ?></p>
             </div>
+
         </div>
         <?php endif; ?>
 
@@ -293,13 +309,7 @@ $history_result = $history_query->get_result();
                     <button id="toggleCompleted" class="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-full">
                         <i class="fas fa-eye-slash mr-1"></i> Hide Completed
                     </button>
-                    <select id="difficultyFilter" class="text-sm bg-gray-200 px-3 py-1 rounded-full">
-                        <option value="all">All Difficulties</option>
-                        <option value="beginner">Beginner</option>
-                        <option value="intermediate">Intermediate</option>
-                        <option value="advanced">Advanced</option>
-                        <option value="expert">Expert</option>
-                    </select>
+                    
                 </div>
             </div>
             
@@ -356,9 +366,7 @@ $history_result = $history_query->get_result();
                                     <i class="fas fa-trophy text-white text-2xl"></i>
                                 </div>
                             <?php endif; ?>
-                            <div class="absolute top-3 right-3 bg-white rounded-full py-1 px-3 text-xs font-medium text-gray-700">
-                                <?php echo ucfirst($challenge['difficulty']); ?>
-                            </div>
+                            
                             
                             <?php if($is_completed): ?>
                                 <div class="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
@@ -433,7 +441,7 @@ $history_result = $history_query->get_result();
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Completed</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Challenge</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Difficulty</th>
+                               
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Points</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Badge</th>
                             </tr>
@@ -452,11 +460,7 @@ $history_result = $history_query->get_result();
                                             <?php echo ucfirst($history['category']); ?>
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                            <?php echo ucfirst($history['difficulty']); ?>
-                                        </span>
-                                    </td>
+                                  
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <?php echo $history['points']; ?> points
                                     </td>
@@ -487,29 +491,8 @@ $history_result = $history_query->get_result();
     </div>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-6 mt-12">
-        <div class="container mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
-                    <div class="text-xl font-bold">NutriTrack<span class="text-secondary">2025</span></div>
-                    <div class="text-gray-400 text-sm">Your health journey, simplified</div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="#" class="text-gray-400 hover:text-white transition">
-                        <i class="fas fa-question-circle"></i> Help
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-white transition">
-                        <i class="fas fa-shield-alt"></i> Privacy
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-white transition">
-                        <i class="fas fa-file-contract"></i> Terms
-                    </a>
-                </div>
-            </div>
-            <div class="mt-6 border-t border-gray-700 pt-4 text-sm text-gray-400 text-center">
-                <p>&copy; 2025 NutriTrack. All rights reserved.</p>
-            </div>
-        </div>
+    <footer class="bg-dark text-white py-6 ">
+        <?php include '../footer.php'; ?>
     </footer>
 
     <script>
