@@ -49,18 +49,24 @@ $conn->close();
 </head>
 <body class="bg-gray-100 min-h-screen">
     <!-- Top Navigation -->
-    <nav class="bg-dark text-white shadow-md">
+    <style>
+        .das{
+            background-color: #b92e34;
+background-image: linear-gradient(326deg, #b92e34 0%, #3d0c02 74%);
+        }
+    </style>
+    <nav class="das text-white shadow-md">
         <div class="container mx-auto px-6 py-3 flex justify-between items-center">
             <div class="flex items-center">
                 <span class="text-2xl font-bold mr-4">
-                    <span class="text-admin">Admin</span>Panel
+                    <span class="text-orange-500">Admin</span>Panel
                 </span>
                 <div class="hidden md:flex space-x-6 font-medium text-sm">
-                    <a href="dashboard.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Dashboard</a>
-                    <a href="users.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Users</a>
-                    <a href="foods.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Food Entries</a>
-                    <a href="workouts.php" class="py-2 px-3 bg-admin rounded-md text-white">Workout Entries</a>
-                    <a href="challenges.php" class="py-2 px-3 hover:bg-gray-700 rounded-md">Challenges</a>
+                    <a href="dashboard.php" class="py-2 px-3 hover:bg-orange-100 hover:text-orange-900 font-semibold rounded-md">Dashboard</a>
+                    <a href="users.php" class="py-2 px-3 hover:bg-orange-100 hover:text-orange-900  font-semibold rounded-md">Users</a>
+                    <a href="foods.php" class="py-2 px-3 hover:bg-orange-100 hover:text-orange-900 font-semibold  rounded-md">Food Entries</a>
+                    <a href="workouts.php" class="py-2 px-3 bg-orange-700 hover:bg-orange-100 hover:text-orange-900  font-semibold rounded-md text-white">Workout Entries</a>
+                    <a href="challenges.php" class="py-2 px-3 hover:bg-orange-100 hover:text-orange-900  font-semibold rounded-md">Challenges</a>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -68,7 +74,7 @@ $conn->close();
                     <i class="fas fa-home mr-1"></i> User Dashboard
                 </a>
                 <div class="relative group">
-                    <button class="flex items-center space-x-2">
+                    <button class="flex py-2 px-3 items-center space-x-2">
                         <div class="w-8 h-8 rounded-full bg-admin flex items-center justify-center">
                             <i class="fas fa-user-shield"></i>
                         </div>
@@ -89,7 +95,14 @@ $conn->close();
     </nav>
 
     <!-- Main Content -->
-    <div class="container mx-auto px-6 py-8">
+    <style>
+        .new{
+            background-color: #f2f0ef;
+background-image: linear-gradient(315deg, #f2f0ef 0%, #fbceb1 74%);
+
+        }
+        </style>
+    <div class="container new mx-auto px-6 py-8">
         <h1 class="text-3xl font-bold text-gray-800 mb-6">Workout Log Entries</h1>
         <div class="bg-white rounded-lg shadow-md p-6">
             <div class="overflow-x-auto">
