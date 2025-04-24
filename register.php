@@ -3,7 +3,7 @@ session_start();
 include 'db.php';
 
 if (isset($_SESSION['email'])) {
-    header("Location: dashboard.php");
+    header("Location: dashboard/user.php");
     exit();
 }
 
@@ -178,3 +178,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 </body>
 </html>
+
