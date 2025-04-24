@@ -15,12 +15,7 @@
                 <div class="space-y-4">
                     <h3 class="text-2xl font-bold text-red-500">NutriTrack</h3>
                     <p class="text-gray-300 text-sm">Elevate your fitness journey with premium nutrition supplements.</p>
-                    <div class="flex space-x-4 text-2xl">
-                        <a href="#" class="text-red-400 hover:text-red-300 transition"><i class="ri-facebook-circle-fill"></i></a>
-                        <a href="#" class="text-red-400 hover:text-red-300 transition"><i class="ri-instagram-line"></i></a>
-                        <a href="#" class="text-red-400 hover:text-red-300 transition"><i class="ri-twitter-fill"></i></a>
-                        <a href="#" class="text-red-400 hover:text-red-300 transition"><i class="ri-linkedin-box-fill"></i></a>
-                    </div>
+                   
                 </div>
 
                
@@ -72,3 +67,4 @@
     </footer>
 </body>
 </html>
+
