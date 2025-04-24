@@ -1,3 +1,48 @@
+
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
+    $name    = htmlspecialchars(trim($_POST['name']));
+    $email   = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+    $message = htmlspecialchars(trim($_POST['message']));
+
+    if (!empty($name) && !empty($email) && !empty($message)) {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            // Database connection
+            include 'db.php';
+            $sql = "CREATE TABLE IF NOT EXISTS query (
+                id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(30) NOT NULL,
+                email VARCHAR(50) NOT NULL,
+                message TEXT NOT NULL,
+                reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                resolution ENUM('unresolved', 'resolved') DEFAULT 'unresolved'
+            )";
+            if ($conn->query($sql) === TRUE) {
+               
+            } else {
+                echo "Error creating table: " . $conn->error;
+            }
+
+            $stmt = $conn->prepare("INSERT INTO query (name, email, message) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $name, $email, $message);
+
+            if ($stmt->execute()) {
+                // echo "<script>alert('Message submitted successfully!');</script>";
+            } else {
+                echo "<script>alert('Failed to submit message.');</script>";
+            }
+
+            $stmt->close();
+            $conn->close();
+        } else {
+            echo "<script>alert('Invalid email address.');</script>";
+        }
+    } else {
+        echo "<script>alert('Please fill in all fields.');</script>";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
