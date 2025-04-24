@@ -289,7 +289,7 @@ background-image: linear-gradient(315deg, #f2f0ef 0%, #fbceb1 74%);
                                         <?php endif; ?>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <?php echo $row['calories']; ?> kcal
+                                        <?php echo $row['calories']; ?> cal
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <?php echo date('M d, Y', strtotime($row['date'])); ?>
