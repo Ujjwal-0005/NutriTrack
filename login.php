@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             setcookie("firstname", $firstname, time() + (86400 * 30), "/");
             setcookie("lastname", $lastname, time() + (86400 * 30), "/");
             setcookie("admin", 0, time() + (86400 * 30), "/");
-            header("Location: dashboard/user.php");
+            header("Location: index.php");
             exit();
         } else {
             $error = "Invalid password.";
@@ -203,4 +203,6 @@ $conn->close();
     </div>
 </body>
 </html>
+
+
 
