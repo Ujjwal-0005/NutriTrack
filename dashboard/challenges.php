@@ -84,7 +84,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['complete_challenge'])
     }
 }
 
-// Get user's total points
+$failed_challenges_sql = "SELECT c.* FROM challenges c 
+                         WHERE c.end_date < NOW() 
+                         AND c.id NOT IN (
+                            SELECT challenge_id FROM completed_challenges WHERE user_id = ?
+                         )
+                         ORDER BY c.end_date DESC";
+$failed_query = $conn->prepare($failed_challenges_sql);
+$failed_query->bind_param("i", $user_id);
+$failed_query->execute();
+$failed_challenges_result = $failed_query->get_result();
+$failed_challenges = [];
+
+while ($row = $failed_challenges_result->fetch_assoc()) {
+    $failed_challenges[] = $row;
+}
+
 $total_points = 0;
 $points_query = $conn->prepare("SELECT points FROM challenge_points WHERE user_id = ?");
 $points_query->bind_param("i", $user_id);
@@ -96,7 +111,6 @@ if ($points_result->num_rows > 0) {
     $total_points = $points_row['points'];
 }
 
-// Get user's completed challenges
 $completed_challenges = [];
 $completed_query = $conn->prepare("SELECT challenge_id FROM completed_challenges WHERE user_id = ?");
 $completed_query->bind_param("i", $user_id);
@@ -427,67 +441,138 @@ background-image: linear-gradient(315deg, #0073cf 0%,rgb(236, 224, 218) 74%);
             <?php endif; ?>
         </div>
 
-        <!-- Your Challenge History -->
-        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <!-- Your Challenge History with Tabs -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden mb-8">
             <div class="p-5 border-b border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800">Your Challenge History</h2>
             </div>
             
-            <?php if ($history_result && $history_result->num_rows > 0): ?>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Completed</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Challenge</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                               
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Points</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Badge</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <?php while($history = $history_result->fetch_assoc()): ?>
+            <!-- Tabs -->
+            <div class="bg-gray-100 px-4 py-2 border-b border-gray-200">
+                <div class="flex space-x-4">
+                    <button id="completedTabBtn" class="py-2 px-3 text-sm font-medium border-b-2 border-primary text-primary">
+                        Completed
+                    </button>
+                    <button id="failedTabBtn" class="py-2 px-3 text-sm font-medium text-gray-600 hover:text-primary">
+                        Missed Challenges
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Completed Challenges Tab -->
+            <div id="completedTab">
+                <?php if ($history_result && $history_result->num_rows > 0): ?>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <?php echo date('M d, Y', strtotime($history['completed_at'])); ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900"><?php echo $history['title']; ?></div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                            <?php echo ucfirst($history['category']); ?>
-                                        </span>
-                                    </td>
-                                  
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <?php echo $history['points']; ?> points
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <?php if ($history['badge_image']): ?>
-                                            <img src="../uploads/badges/<?php echo $history['badge_image']; ?>" alt="Badge" class="h-8 w-8 rounded-full">
-                                        <?php else: ?>
-                                            <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                                                <i class="fas fa-trophy text-indigo-600 text-xs"></i>
-                                            </div>
-                                        <?php endif; ?>
-                                    </td>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Completed</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Challenge</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Points</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Badge</th>
                                 </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php else: ?>
-                <div class="p-12 text-center">
-                    <div class="inline-flex bg-blue-100 rounded-full p-6 mb-4">
-                        <i class="fas fa-trophy text-blue-600 text-3xl"></i>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <?php while($history = $history_result->fetch_assoc()): ?>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <?php echo date('M d, Y', strtotime($history['completed_at'])); ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900"><?php echo $history['title']; ?></div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                <?php echo ucfirst($history['category']); ?>
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <?php echo $history['points']; ?> points
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <?php if ($history['badge_image']): ?>
+                                                <img src="../uploads/badges/<?php echo $history['badge_image']; ?>" alt="Badge" class="h-8 w-8 rounded-full">
+                                            <?php else: ?>
+                                                <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                                                    <i class="fas fa-trophy text-indigo-600 text-xs"></i>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">No challenges completed yet</h3>
-                    <p class="text-gray-500 mb-6">Complete your first challenge to see your history here!</p>
-                </div>
-            <?php endif; ?>
+                <?php else: ?>
+                    <div class="p-12 text-center">
+                        <div class="inline-flex bg-blue-100 rounded-full p-6 mb-4">
+                            <i class="fas fa-trophy text-blue-600 text-3xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No challenges completed yet</h3>
+                        <p class="text-gray-500 mb-6">Complete your first challenge to see your history here!</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+            
+            <!-- Failed Challenges Tab -->
+            <div id="failedTab" class="hidden">
+                <?php if (count($failed_challenges) > 0): ?>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ended On</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Challenge</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Difficulty</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Points Missed</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <?php foreach($failed_challenges as $challenge): ?>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <?php echo date('M d, Y', strtotime($challenge['end_date'])); ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900"><?php echo $challenge['title']; ?></div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                <?php echo ucfirst($challenge['category']); ?>
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                <?php echo $challenge['difficulty'] == 'easy' ? 'bg-green-100 text-green-800' : 
+                                                    ($challenge['difficulty'] == 'medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'); ?>">
+                                                <?php echo ucfirst($challenge['difficulty']); ?>
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="text-red-500">
+                                                <i class="fas fa-times-circle mr-1"></i>
+                                                <?php echo $challenge['points']; ?> points
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else: ?>
+                    <div class="p-12 text-center">
+                        <div class="inline-flex bg-green-100 rounded-full p-6 mb-4">
+                            <i class="fas fa-check-circle text-green-600 text-3xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No missed challenges!</h3>
+                        <p class="text-gray-500 mb-6">You've completed all the challenges you've attempted. Great job!</p>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
+
     </div>
     <footer class="bg-gray-900 text-white">
         <div class="container mx-auto px-4 py-12">
@@ -615,6 +700,27 @@ background-image: linear-gradient(315deg, #0073cf 0%,rgb(236, 224, 218) 74%);
                 categoryFilters[0].classList.add('ring-2', 'ring-offset-2', 'ring-primary', 'active');
             }
         }
+        const completedTabBtn = document.getElementById('completedTabBtn');
+        const failedTabBtn = document.getElementById('failedTabBtn');
+        const completedTab = document.getElementById('completedTab');
+        const failedTab = document.getElementById('failedTab');
+
+        if (completedTabBtn && failedTabBtn && completedTab && failedTab) {
+            completedTabBtn.addEventListener('click', function () {
+                completedTab.classList.remove('hidden');
+                failedTab.classList.add('hidden');
+                completedTabBtn.classList.add('border-primary', 'text-primary');
+                failedTabBtn.classList.remove('border-primary', 'text-primary');
+            });
+
+            failedTabBtn.addEventListener('click', function () {
+                failedTab.classList.remove('hidden');
+                completedTab.classList.add('hidden');
+                failedTabBtn.classList.add('border-primary', 'text-primary');
+                completedTabBtn.classList.remove('border-primary', 'text-primary');
+            });
+        }
+
     </script>
 </body>
 </html>
