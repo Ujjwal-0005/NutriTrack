@@ -28,3 +28,4 @@
         <button class="md:hidden text-2xl"><i class="fas fa-bars"></i></button>
     </div>
 </nav>
+
