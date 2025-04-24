@@ -88,11 +88,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                       difficulty = ?,
                       category = ?,
                       badge_name = ?,
-                      badge_image = ?,
+                      badge_image = ?
                       WHERE id = ?";
         
         $update_stmt = $conn->prepare($update_sql);
-        $update_stmt->bind_param("sssississssi", 
+        $update_stmt->bind_param("sssissssssi", 
             $title, 
             $description, 
             $goal, 
