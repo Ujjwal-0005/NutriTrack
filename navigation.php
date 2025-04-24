@@ -24,3 +24,4 @@ background-image: linear-gradient(315deg, #7f5a83 0%, #0d324d 74%);
         <button class="md:hidden text-2xl"><i class="fas fa-bars"></i></button>
     </div>
 </nav>
+
